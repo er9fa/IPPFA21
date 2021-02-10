@@ -21,7 +21,8 @@ Bot.on('error', err => {
 
 // Dictates bot behavior when it sees a message being sent.
 async function onMessage(msg) {
-
+    if(msg.content === 'hi')
+      msg.channel.send('Hi DEVHUB! How is everyone?')
 }
 
 // Behavior independent of messages goes here.

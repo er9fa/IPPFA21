@@ -23,7 +23,17 @@ Bot.on('error', err => {
 async function onMessage(msg) {
     if(msg.content === 'hi')
       msg.channel.send('Hi DEVHUB! How is everyone?')
+
+    if(msg.content === ('Tell me about yourself?') || ('tell me about yourself?')){
+      msg.channel.send('Hi! My name is Won and I am fourth year \
+      student studying Cognitive Science. Some of my hobbies \
+      include playing basketball, fishing and listening to \
+      new music. Nice to meet you, I hope you are keeping \
+      well during the pandemic!')
+    }
 }
+
+
 
 // Behavior independent of messages goes here.
 // Function executed every 5 seconds.

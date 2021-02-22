@@ -21,7 +21,14 @@ Bot.on('error', err => {
 
 // Dictates bot behavior when it sees a message being sent.
 async function onMessage(msg) {
+  if(msg.content === 'hi')
+    msg.channel.send('Hi Arash! I hope you are doing well!')
 
+  else if(msg.content === ('Tell me about yourself') || ('tell me about yourself'))
+      msg.channel.send('My name is Arash Azizi. My favorite food is chocolate and my favorite football team is the Eagles.')
+
+  else if(msg.content === 'What is your favorite color?')
+        msg.channel.send('My favorite color is blue.')
 }
 
 // Behavior independent of messages goes here.

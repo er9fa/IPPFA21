@@ -1,9 +1,10 @@
 require('dotenv').config();
 const Bot = new (require('discord.js').Client)();
 
+var weather = require('weather-js');
 var TOKEN = process.env.DISCORDTOKEN;
 var NAME = process.env.DISCORDNAME;
-var CHANNEL = ''; // ID of the channel which this bot looks at
+var CHANNEL = '812110847194693693'; // ID of the channel which this bot looks at
 
 Bot.sendMessage = (content, channel) => (Bot.channels.cache.get(channel ?? CHANNEL) ?? {send: () => null}).send(content);
 
@@ -21,6 +22,14 @@ Bot.on('error', err => {
 
 // Dictates bot behavior when it sees a message being sent.
 async function onMessage(msg) {
+    if(msg.content === 'tell me about yourself'){
+      msg.channel.send('Hi, my name is Serhii!'+
+      ' I am a second year student and I study computer science.'+
+      ' I like watching TV and playing computer games.');
+    }
+    if(msg.content === 'weather'){
+      msg.channel.send("Test");
+    }
 
 }
 

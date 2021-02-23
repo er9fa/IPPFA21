@@ -21,7 +21,8 @@ Bot.on('error', err => {
 
 // Dictates bot behavior when it sees a message being sent.
 async function onMessage(msg) {
-
+  if(msg.content.toUpperCase() === 'PING')
+    msg.channel.send('Ping')
 }
 
 // Behavior independent of messages goes here.

@@ -1,7 +1,7 @@
 require('dotenv').config();
 const Bot = new (require('discord.js').Client)();
+const axios = require('axios');
 
-var weather = require('weather-js');
 var TOKEN = process.env.DISCORDTOKEN;
 var NAME = process.env.DISCORDNAME;
 var CHANNEL = '812110847194693693'; // ID of the channel which this bot looks at
@@ -27,8 +27,15 @@ async function onMessage(msg) {
       ' I am a second year student and I study computer science.'+
       ' I like watching TV and playing computer games.');
     }
-    if(msg.content === 'weather'){
-      msg.channel.send("Test");
+    if(msg.content === '!weather'){
+      let getWeather = async () => {
+        let response = await axios.get('http://api.openweathermap.org/data/2.5/weather?q=Charlottesville&appid=8c7aec8bcf09c0c9181b2258c865837c')
+        let weather = response.data
+        return weather
+      }
+      let weatherValue = await getWeather()
+      msg.channel.send(`City: ${weatherValue['name']}. Temperature: ${weatherValue['main']['temp']} (absolute temperature in Kelvin).`+
+    ` Weather description: ${weatherValue['weather']['0']['description']}`);
     }
 
 }

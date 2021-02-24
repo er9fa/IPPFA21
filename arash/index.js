@@ -1,5 +1,6 @@
 require('dotenv').config();
 const Bot = new (require('discord.js').Client)();
+const fetch = require('node-fetch');
 
 var TOKEN = process.env.DISCORDTOKEN;
 var NAME = process.env.DISCORDNAME;
@@ -24,11 +25,17 @@ async function onMessage(msg) {
   if(msg.content === 'hi')
     msg.channel.send('Hi Arash! I hope you are doing well!')
 
-  else if(msg.content === ('Tell me about yourself') || ('tell me about yourself'))
-      msg.channel.send('My name is Arash Azizi. My favorite food is chocolate and my favorite football team is the Eagles.')
+  else if(msg.content === 'What is the weather?'){
+    fetch("https://api.weatherbit.io/v2.0/current?city=Charlottesville,VA&key=932b1f06a2164b0ea1b137d62b1eee51&include=minutely").then(r => r.json()).then(data => {
+      msg.channel.send(data.data[0].weather.description)},
+      r => msg.channel.send('Cannot access weather'))
+    }
 
   else if(msg.content === 'What is your favorite color?')
-        msg.channel.send('My favorite color is blue.')
+      msg.channel.send('My favorite color is blue.')
+
+  else if(msg.content === 'Tell me about yourself')
+      msg.channel.send('My name is Arash Azizi. My favorite food is chocolate and my favorite football team is the Eagles.')
 }
 
 // Behavior independent of messages goes here.
@@ -60,3 +67,7 @@ module.exports = {
     Bot: Bot,
     Interval: onInterval,
 }
+
+fetch("https://api.weatherbit.io/v2.0/current?city=Charlottesville,VA&key=932b1f06a2164b0ea1b137d62b1eee51&include=minutely").then(r => r.json()).then(data => {
+  let weatherReport = data.data[0].weather.description;
+})

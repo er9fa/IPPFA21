@@ -41,7 +41,7 @@ async function onMessage(msg) {
           `
           'The current weather in Charlottesville is ${weather.main.temp}°F'
           `
-        )
+        );
       })
     }
 

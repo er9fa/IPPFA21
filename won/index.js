@@ -1,5 +1,6 @@
 require('dotenv').config();
 const Bot = new (require('discord.js').Client)();
+const fetch = require('node-fetch');
 
 var TOKEN = process.env.DISCORDTOKEN;
 var NAME = process.env.DISCORDNAME;
@@ -22,14 +23,19 @@ Bot.on('error', err => {
 // Dictates bot behavior when it sees a message being sent.
 async function onMessage(msg) {
     if(msg.content === 'hi')
-      msg.channel.send('Hi DEVHUB! How is everyone?')
+      msg.channel.send('Hi DEVHUB! How is everyone?');
 
-    else if(msg.content === ('Tell me about yourself?') || ('tell me about yourself?')){
-      msg.channel.send('Hi! My name is Won and I am a fourth year student' +
+    else if(msg.content === ('Tell me about yourself?') || ('tell me about yourself?'))
+      msg.channel.send('Hi! My name is Won and I am a fourth year student at UVA' +
       ' studying Cognitive Science. Some of my hobbies include playing basketball,' +
       ' fishing and listening to new music. Nice to meet you, I hope you are keeping' +
-      'well during the pandemic!')
+      ' well during the pandemic!');
+
+    else if(msg.content === 'Tell me weather of Charlottesville'){
+      fetch('api.openweathermap.org/data/2.5/weather?q=Charlottesville&appid=053f96ec8527cdb8c811437a5dd2922e')
+      .then(response => {return response.json()})
     }
+
 }
 
 

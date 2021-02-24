@@ -33,7 +33,7 @@ async function onMessage(msg) {
 
     else if(msg.content === 'Tell me weather of Charlottesville'){
       fetch('api.openweathermap.org/data/2.5/weather?q=Charlottesville&appid=053f96ec8527cdb8c811437a5dd2922e')
-      .then(response => return response.json())
+      .then(response => response.json())
       .then(weather => {
         message.channel.send(
           `

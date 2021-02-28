@@ -32,7 +32,20 @@ async function onMessage(msg) {
       for (var i = 0; i < routesLength; i++) {
       	arr.push(data.routes[i].long_name + " or " + data.routes[i].short_name)
        }
-        msg.channel.send(arr)},
+      msg.channel.send(arr)},
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'What buses are active?') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/routes/").then(r => r.json()).then(data => {
+      var routesLength = data.routes.length;
+      var arr = []
+      for (var i = 0; i < routesLength; i++) {
+        if (data.routes[i].is_active === true) {
+      		arr.push(data.routes[i].long_name + " or " + data.routes[i].short_name)
+        }
+       }
+      msg.channel.send(arr)},
       r => msg.channel.send('Cannot access weather'))
   }
 

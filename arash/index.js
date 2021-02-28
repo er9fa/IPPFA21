@@ -25,6 +25,17 @@ async function onMessage(msg) {
   if(msg.content === 'hi')
     msg.channel.send('Hi Arash! I hope you are doing well!')
 
+  else if(msg.content === 'What are the bus routes?') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/routes/").then(r => r.json()).then(data => {
+      var routesLength = data.routes.length;
+      var arr = []
+      for (var i = 0; i < routesLength; i++) {
+      	arr.push(data.routes[i].long_name + " or " + data.routes[i].short_name)
+       }
+        msg.channel.send(arr)},
+      r => msg.channel.send('Cannot access weather'))
+  }
+
   else if(msg.content === 'What is the weather?'){
     fetch("https://api.weatherbit.io/v2.0/current?city=Charlottesville,VA&key=932b1f06a2164b0ea1b137d62b1eee51&include=minutely").then(r => r.json()).then(data => {
       msg.channel.send(data.data[0].weather.description)},

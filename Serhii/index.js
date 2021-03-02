@@ -38,6 +38,18 @@ async function onMessage(msg) {
     ` Weather description: ${weatherValue['weather']['0']['description']}`);
     }
 
+    if(msg.content === '!busses'){
+      let getBusses = async () => {
+        let response = await axios.get('https://api.devhub.virginia.edu/v1/transit/vehicles')
+        let busses = response.data
+        return busses
+      }
+      let bussesData = await getBusses()
+      //var stringData = JSON.stringify(bussesData);
+      console.log(bussesData["vehicles"].length);
+      msg.channel.send(`Number of busses in database: ${bussesData["vehicles"].length}`);
+    }
+
 }
 
 // Behavior independent of messages goes here.

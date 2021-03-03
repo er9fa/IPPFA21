@@ -50,6 +50,34 @@ async function onMessage(msg) {
       msg.channel.send(`Number of busses in database: ${bussesData["vehicles"].length}`);
     }
 
+    if(msg.content === '!stops'){
+      let getStops = async () => {
+        let response = await axios.get('https://api.devhub.virginia.edu/v1/transit/bus-stops')
+        let stops = response.data
+        return stops
+      }
+      let stopsData = await getStops()
+      //var stringData = JSON.stringify(bussesData);
+      console.log(stopsData["stops"].length);
+      msg.channel.send(`Number of stops in database: ${stopsData["stops"].length}`);
+    }
+
+    if(msg.content === '!randStop'){
+      let getStops = async () => {
+        let response = await axios.get('https://api.devhub.virginia.edu/v1/transit/bus-stops')
+        let stops = response.data
+        return stops
+      }
+      let stopsData = await getStops()
+      //var stringData = JSON.stringify(bussesData)
+      console.log(stopsData["stops"].length);
+      msg.channel.send(`Random Stop: ${stopsData["stops"][getRandomInt(107)]["name"]}`);
+    }
+
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }
 
 // Behavior independent of messages goes here.

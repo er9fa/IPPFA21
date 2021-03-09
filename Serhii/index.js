@@ -70,7 +70,7 @@ async function onMessage(msg) {
       }
       let stopsData = await getStops()
       //var stringData = JSON.stringify(bussesData)
-      console.log(stopsData["stops"].length);
+      console.log(stopsData);
       msg.channel.send(`Random Stop: ${stopsData["stops"][getRandomInt(107)]["name"]}`);
     }
 
@@ -88,6 +88,36 @@ function onInterval(Client) {
     return async () => {
         time += 5;
         console.log('Executed interval.');
+
+        let getStops = async () => {
+          let response = await axios.get('https://api.devhub.virginia.edu/v1/transit/bus-stops')
+          let stops = response.data
+          return stops
+        }
+
+        let stopsData = await getStops()
+        let myStop = null;
+
+        for (const property in stopsData["stops"]) {
+          if (stopsData["stops"][property]["id"] == 4248160){
+            myStop = stopsData["stops"][property];
+          }
+        }
+
+        Bot.sendMessage(`Location of my bus stop (Faulkner Apartmenets): ${myStop["position"]}`);
+
+        let getBusses = async () => {
+          let response = await axios.get('https://api.devhub.virginia.edu/v1/transit/vehicles')
+          let busses = response.data
+          return busses
+        }
+
+        let bussesData = await getBusses()
+        //var stringData = JSON.stringify(bussesData);
+        for (const property in bussesData["vehicles"]) {
+          console.log(bussesData["vehicles"][property]["position"][0]);
+        }
+
     }
 }
 

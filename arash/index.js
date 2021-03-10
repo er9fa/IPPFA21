@@ -70,14 +70,30 @@ function onInterval(Client) {
     return async () => {
         time += 5;
         console.log('Executed interval.');
-        //Bot.sendMessage("Hi");
-         // fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
-        //  if (data.vehicles[0].current_stop_id === 4235116)
-        //  Bot.sendMessage("Your bus is at your stop")},
-        //  r => msg.channel.send('Cannot access weather'))
-    }
+            //Bot.sendMessage("Hi");
+            //fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
+            //for (let x = 0; x < data.vehicles.length; x++) {
+              //if (data.vehicles[x].route_id === 4013970) {
+                //if (data.vehciles[x].next_stop === 4245904) {
+                  //Bot.sendMessage("Your buses is close to your stop")
+                //}
+              //}
+            //}
+            //r => Bot.sendMessage('Cannot access your bus data')
+            //}
+          //)
+        fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
+          let numOfVehicles = data.vehicles.routesLength;
+          let userStop = 4245930;
+          for (let x = 0; x < numOfVehicles; x++) {
+            if (data.vehicles[x].route_id === 4013970 && data.vehicles[x].next_stop === userStop) {
+              Bot.sendMessage("Bus arriving at your stop soon!")
+            }
+          }
+          },
+          r => Bot.sendMessage('Cannot access Bus Information'))
+  }
 }
-
 // Requires Nodejs v14.6.0
 // Runs only if this file is the main process.
 if(require.main === module) {

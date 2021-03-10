@@ -70,6 +70,11 @@ function onInterval(Client) {
     return async () => {
         time += 5;
         console.log('Executed interval.');
+        //Bot.sendMessage("Hi");
+         // fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
+        //  if (data.vehicles[0].current_stop_id === 4235116)
+        //  Bot.sendMessage("Your bus is at your stop")},
+        //  r => msg.channel.send('Cannot access weather'))
     }
 }
 

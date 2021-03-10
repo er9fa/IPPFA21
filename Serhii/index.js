@@ -104,8 +104,6 @@ function onInterval(Client) {
           }
         }
 
-        Bot.sendMessage(`Location of my bus stop (Faulkner Apartmenets): ${myStop["position"]}`);
-
         let getBusses = async () => {
           let response = await axios.get('https://api.devhub.virginia.edu/v1/transit/vehicles')
           let busses = response.data
@@ -115,7 +113,13 @@ function onInterval(Client) {
         let bussesData = await getBusses()
         //var stringData = JSON.stringify(bussesData);
         for (const property in bussesData["vehicles"]) {
-          console.log(bussesData["vehicles"][property]["position"][0]);
+          let x = bussesData["vehicles"][property]["position"][0];
+          let y = bussesData["vehicles"][property]["position"][1];
+          let stopx = myStop["position"][0];
+          let stopy = myStop["position"][1];
+          if (Math.sqrt(Math.pow(x-stopx,2)+Math.pow(y-stopy,2))<=0.001){
+            Bot.sendMessage("Your bus is approaching the bus stop!")
+          }
         }
 
     }

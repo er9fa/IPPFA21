@@ -79,6 +79,7 @@ async function onMessage(msg) {
   if(msg.content==="!refresh"){
     await refresh();
     msg.channel.send("Refreshed!");
+    updateBuses();
   }
   else if(msg.content.startsWith("!await")){
     const request = msg.content.split(" ");
@@ -92,8 +93,8 @@ async function onMessage(msg) {
         if(waiting.has(parseInt(request[1])))
           s+="Overwriting previous await request at"+stopNames.get(parseInt(request[1]))+'\n';
         waiting.set(parseInt(request[1]), null);
-        arriving.set(parseInt(request[1]), []);
-        arrived.set(parseInt(request[1]), []);
+        arriving.set(parseInt(request[1]), new Set());
+        arrived.set(parseInt(request[1]), new Set());
         msg.channel.send(s+`Now awaiting: ${stopNames.get(parseInt(request[1]))}\nRoutes: all`);
         updateBuses();
       }
@@ -150,12 +151,32 @@ async function onMessage(msg) {
     arrived.clear();
     msg.channel.send("All await requests cleared")
   }
+  else if(msg.content==="!lookup"){
+    let s = "";
+    //console.log(stopID);
+    let counter=0;
+    for(const key of Array.from(stopID, x=>x[0]).sort()){
+      s+=key+": "+stopID.get(key)+"\n";
+      counter++;
+      if(counter===25){
+        msg.channel.send(s);
+        s="";
+        counter=0;
+      }
+    }
+    if(s!="")
+      msg.channel.send(s);
+  }
+  else if(msg.content === "!printStatus"){
+    console.log(arriving);
+    console.log(arrived);
+  }
 }
 
 function updateBuses(){
   for(const stop of waiting.keys()){
     const arriving_buses = busData.vehicles.filter(x=> x.next_stop===stop && (waiting.get(stop)===null ? true : waiting.get(stop).includes(x.route_id))).map(x=>[x.id, x.route_id]);
-    const arrived_buses = busData.vehicles.filter(x=> x.current_stop===stop && (waiting.get(stop)===null ? true : waiting.get(stop).includes(x.route_id))).map(x=>[x.id, x.route_id]);
+    const arrived_buses = busData.vehicles.filter(x=> x.current_stop_id===stop && (waiting.get(stop)===null ? true : waiting.get(stop).includes(x.route_id))).map(x=>[x.id, x.route_id]);
     let new_buses = [];
     for(const bus of arriving_buses){
       if(!arriving.get(stop).has(bus[0]))

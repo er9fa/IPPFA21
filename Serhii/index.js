@@ -122,15 +122,18 @@ function onInterval(Client) {
 
         for (const property in bussesData["vehicles"]){
           if (bussesData["vehicles"][property]["next_stop"] == previousStop["id"]){
-            Bot.sendMessage("Your bus is approaching the stop before yours")
+            Bot.sendMessage("Your bus is approaching the stop before yours");
+            console.log (bussesData["vehicles"][property]);
           }
 
           if (bussesData["vehicles"][property]["current_stop_id"] == previousStop["id"]){
-            Bot.sendMessage("Your bus is at the stop before yours")
+            Bot.sendMessage("Your bus is at the stop before yours");
+            console.log (bussesData["vehicles"][property]);
           }
 
-          if ((bussesData["vehicles"][property]["next_stop"] == myStop["id"]) && (bussesData["vehicles"][property]["current_stop_id"] == null)){
-            Bot.sendMessage("Your bus is approaching your stop")
+          if (bussesData["vehicles"][property]["next_stop"] == myStop["id"]){
+            Bot.sendMessage("Your bus is approaching your stop");
+            console.log (bussesData["vehicles"][property]);
           }
 
         }

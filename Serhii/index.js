@@ -97,11 +97,17 @@ function onInterval(Client) {
 
         let stopsData = await getStops()
         let myStop = null;
+        let previousStop = null;
 
         for (const property in stopsData["stops"]) {
           if (stopsData["stops"][property]["id"] == 4248160){
             myStop = stopsData["stops"][property];
           }
+
+          if (stopsData["stops"][property]["id"] == 4235200){
+            previousStop = stopsData["stops"][property];
+          }
+
         }
 
         let getBusses = async () => {
@@ -111,16 +117,34 @@ function onInterval(Client) {
         }
 
         let bussesData = await getBusses()
-        //var stringData = JSON.stringify(bussesData);
-        for (const property in bussesData["vehicles"]) {
-          let x = bussesData["vehicles"][property]["position"][0];
-          let y = bussesData["vehicles"][property]["position"][1];
-          let stopx = myStop["position"][0];
-          let stopy = myStop["position"][1];
-          if (Math.sqrt(Math.pow(x-stopx,2)+Math.pow(y-stopy,2))<=0.001){
-            Bot.sendMessage("Your bus is approaching the bus stop!")
+        // console.log(myStop);
+        // console.log(previousStop);
+
+        for (const property in bussesData["vehicles"]){
+          if (bussesData["vehicles"][property]["next_stop"] == previousStop["id"]){
+            Bot.sendMessage("Your bus is approaching the stop before yours")
           }
+
+          if (bussesData["vehicles"][property]["current_stop_id"] == previousStop["id"]){
+            Bot.sendMessage("Your bus is at the stop before yours")
+          }
+
+          if ((bussesData["vehicles"][property]["next_stop"] == myStop["id"]) && (bussesData["vehicles"][property]["current_stop_id"] == null)){
+            Bot.sendMessage("Your bus is approaching your stop")
+          }
+
         }
+
+        //var stringData = JSON.stringify(bussesData);
+        // for (const property in bussesData["vehicles"]) {
+        //   let x = bussesData["vehicles"][property]["position"][0];
+        //   let y = bussesData["vehicles"][property]["position"][1];
+        //   let stopx = myStop["position"][0];
+        //   let stopy = myStop["position"][1];
+        //   if (Math.sqrt(Math.pow(x-stopx,2)+Math.pow(y-stopy,2))<=0.003){
+        //     Bot.sendMessage("Your bus is approaching the bus stop!")
+        //   }
+        // }
 
     }
 }

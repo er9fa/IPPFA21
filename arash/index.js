@@ -83,11 +83,20 @@ function onInterval(Client) {
             //}
           //)
         fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
-          let numOfVehicles = data.vehicles.routesLength;
-          let userStop = 4245930;
-          for (let x = 0; x < numOfVehicles; x++) {
-            if (data.vehicles[x].route_id === 4013970 && data.vehicles[x].next_stop === userStop) {
-              Bot.sendMessage("Bus arriving at your stop soon!")
+          let userStop = 4235134;
+          for (const vehicle in data.vehicles) {
+            if (vehicle.current_stop_id === userStop) {
+              Bot.sendMessage("Bus is at your stop!");
+            }
+          }
+          },
+          r => Bot.sendMessage('Cannot access Bus Information'))
+
+        fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
+          let userStop = 4235134;
+          for (const vehicle in data.vehicles) {
+            if (vehicle.next_stop === userStop) {
+              Bot.sendMessage("Bus should be arriving at your stop soon");
             }
           }
           },

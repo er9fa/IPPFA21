@@ -319,26 +319,6 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'BUCK-Nstops!') {
-    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
-      var idArr = [];
-      var stopArr = [];
-      for (let i = 0; i < data.routes[2].stops.length; i++) {
-        idArr.push(data.routes[2].stops[i])
-      }
-      for (let i = 0; i < idArr.length; i++) {
-        for (let j = 0; j < data.stops.length; j++) {
-          if (idArr[i] === data.stops[j].id) {
-            stopArr.push(data.stops[j].name);
-          }
-        }
-      }
-      msg.channel.send("List of all Buckingham North CONNECT Stops: ");
-      msg.channel.send(stopArr);
-      },
-      r => msg.channel.send('Cannot access weather'))
-  }
-
   else if(msg.content === 'What is the weather?'){
     fetch("https://api.weatherbit.io/v2.0/current?city=Charlottesville,VA&key=932b1f06a2164b0ea1b137d62b1eee51&include=minutely").then(r => r.json()).then(data => {
       msg.channel.send(data.data[0].weather.description)},

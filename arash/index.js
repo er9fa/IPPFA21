@@ -86,7 +86,254 @@ async function onMessage(msg) {
       for (let i = 0; i < data.routes[0].stops.length; i++) {
         idArr.push(data.routes[0].stops[i])
       }
-      msg.channel.send("List of all 29N Stops: ");
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all 29 North CONNECT Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'BUCK-Estops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[1].stops.length; i++) {
+        idArr.push(data.routes[1].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Buckingham East CONNECT Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'BUCK-Nstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[2].stops.length; i++) {
+        idArr.push(data.routes[2].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Buckingham North CONNECT Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'LOVEstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[3].stops.length; i++) {
+        idArr.push(data.routes[3].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Lovingston CONNECT Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'BLUEstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[4].stops.length; i++) {
+        idArr.push(data.routes[4].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Blueline Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'REDstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[5].stops.length; i++) {
+        idArr.push(data.routes[5].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Redline Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'CROZ-Lstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[6].stops.length; i++) {
+        idArr.push(data.routes[6].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Crozet CONNECT Loop Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'SLVstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[7].stops.length; i++) {
+        idArr.push(data.routes[7].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Silver Line Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'GRNstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[8].stops.length; i++) {
+        idArr.push(data.routes[8].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Green Line Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'GLstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[9].stops.length; i++) {
+        idArr.push(data.routes[9].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Gold Line Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'ORstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[10].stops.length; i++) {
+        idArr.push(data.routes[10].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Orange Line Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'RDXstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[11].stops.length; i++) {
+        idArr.push(data.routes[11].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Redline Express Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === 'BUCK-Nstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[2].stops.length; i++) {
+        idArr.push(data.routes[2].stops[i])
+      }
+      for (let i = 0; i < idArr.length; i++) {
+        for (let j = 0; j < data.stops.length; j++) {
+          if (idArr[i] === data.stops[j].id) {
+            stopArr.push(data.stops[j].name);
+          }
+        }
+      }
+      msg.channel.send("List of all Buckingham North CONNECT Stops: ");
       msg.channel.send(stopArr);
       },
       r => msg.channel.send('Cannot access weather'))
@@ -113,18 +360,7 @@ function onInterval(Client) {
     return async () => {
         time += 5;
         console.log('Executed interval.');
-        //Bot.sendMessage("First");
-            //fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
-            //for (let x = 0; x < data.vehicles.length; x++) {
-              //if (data.vehicles[x].route_id === 4013970) {
-                //if (data.vehciles[x].next_stop === 4245904) {
-                  //Bot.sendMessage("Your buses is close to your stop")
-                //}
-              //}
-            //}
-            //r => Bot.sendMessage('Cannot access your bus data')
-            //}
-          //)
+
         fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
           let userStop = 4235134;
           for (const dataField in data["vehicles"]) {

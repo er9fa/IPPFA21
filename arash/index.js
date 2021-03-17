@@ -58,6 +58,40 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
+  else if(msg.content === 'movingbuses!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
+      var arr = [];
+      for (const vehicle in data["vehicles"]) {
+        if (data["vehicles"][vehicle]["speed"] > 0) {
+          //fetch("https://api.devhub.virginia.edu/v1/transit/routes").then(r => r.json()).then(routesData => {
+            //for (const route in routesData["routes"]) {
+              //if (data["vehicles"][vehicle]["route_id"] === routesData["routes"][route]["id"]) {
+                //arr.push(routesData["routes"][route][short_name])
+              //}
+            //}
+            //},
+          //r => msg.channel.send('Cannot access weather'))
+      		arr.push(data["vehicles"][vehicle]["call_name"])
+          }
+      }
+      msg.channel.send("Moving buses: ")
+      msg.channel.send(arr)},
+      r => msg.channel.send('Cannot access weather'))
+  }
+
+  else if(msg.content === '29Nstops!') {
+    fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+      var idArr = [];
+      var stopArr = [];
+      for (let i = 0; i < data.routes[0].stops.length; i++) {
+        idArr.push(data.routes[0].stops[i])
+      }
+      msg.channel.send("List of all 29N Stops: ");
+      msg.channel.send(stopArr);
+      },
+      r => msg.channel.send('Cannot access weather'))
+  }
+
   else if(msg.content === 'What is the weather?'){
     fetch("https://api.weatherbit.io/v2.0/current?city=Charlottesville,VA&key=932b1f06a2164b0ea1b137d62b1eee51&include=minutely").then(r => r.json()).then(data => {
       msg.channel.send(data.data[0].weather.description)},
@@ -94,7 +128,7 @@ function onInterval(Client) {
         fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
           let userStop = 4235134;
           for (const dataField in data["vehicles"]) {
-            console.log(data["vehicles"][dataField]["call_name"])
+            //console.log(data["vehicles"][dataField]["call_name"])
             if (data["vehicles"][dataField]["current_stop_id"] === userStop) {
               Bot.sendMessage("Bus is at your stop!");
             }
@@ -106,7 +140,7 @@ function onInterval(Client) {
         fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
           let userStop = 4235134;
           for (const dataField in data["vehicles"]) {
-            console.log(data["vehicles"][dataField]["id"])
+            //console.log(data["vehicles"][dataField]["id"])
             if (data["vehicles"][dataField]["next_stop"] === userStop) {
               Bot.sendMessage("Bus will be at your stop soon!");
             }

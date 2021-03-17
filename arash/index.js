@@ -25,7 +25,7 @@ async function onMessage(msg) {
   if(msg.content === 'hi')
     msg.channel.send('Hi Arash! I hope you are doing well!')
 
-  else if(msg.content === 'What are the bus routes?') {
+  else if(msg.content === 'allbuses!') {
     fetch("https://api.devhub.virginia.edu/v1/transit/routes/").then(r => r.json()).then(data => {
       var routesLength = data.routes.length;
       var arr = []
@@ -36,16 +36,25 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'What buses are active?') {
+  else if(msg.content === 'buses!') {
     fetch("https://api.devhub.virginia.edu/v1/transit/routes/").then(r => r.json()).then(data => {
       var routesLength = data.routes.length;
-      var arr = []
+      var arr = [];
+      var inactiveArr = [];
       for (var i = 0; i < routesLength; i++) {
         if (data.routes[i].is_active === true) {
       		arr.push(data.routes[i].long_name + " or " + data.routes[i].short_name)
         }
        }
-      msg.channel.send(arr)},
+      for (var i = 0; i < routesLength; i++) {
+       if (data.routes[i].is_active === false) {
+      		inactiveArr.push(data.routes[i].long_name + " or " + data.routes[i].short_name)
+       }
+      }
+      msg.channel.send("Active buses: ")
+      msg.channel.send(arr)
+      msg.channel.send("Inactive buses: ")
+      msg.channel.send(inactiveArr)},
       r => msg.channel.send('Cannot access weather'))
   }
 
@@ -70,7 +79,7 @@ function onInterval(Client) {
     return async () => {
         time += 5;
         console.log('Executed interval.');
-            //Bot.sendMessage("Hi");
+        //Bot.sendMessage("First");
             //fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
             //for (let x = 0; x < data.vehicles.length; x++) {
               //if (data.vehicles[x].route_id === 4013970) {
@@ -84,23 +93,27 @@ function onInterval(Client) {
           //)
         fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
           let userStop = 4235134;
-          for (const vehicle in data.vehicles) {
-            if (vehicle.current_stop_id === userStop) {
+          for (const dataField in data["vehicles"]) {
+            console.log(data["vehicles"][dataField]["call_name"])
+            if (data["vehicles"][dataField]["current_stop_id"] === userStop) {
               Bot.sendMessage("Bus is at your stop!");
             }
           }
           },
           r => Bot.sendMessage('Cannot access Bus Information'))
+        //Bot.sendMessage("First");
 
         fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
           let userStop = 4235134;
-          for (const vehicle in data.vehicles) {
-            if (vehicle.next_stop === userStop) {
-              Bot.sendMessage("Bus should be arriving at your stop soon");
+          for (const dataField in data["vehicles"]) {
+            console.log(data["vehicles"][dataField]["id"])
+            if (data["vehicles"][dataField]["next_stop"] === userStop) {
+              Bot.sendMessage("Bus will be at your stop soon!");
             }
           }
           },
           r => Bot.sendMessage('Cannot access Bus Information'))
+        //Bot.sendMessage("Second");
   }
 }
 // Requires Nodejs v14.6.0

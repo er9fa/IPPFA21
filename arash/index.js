@@ -363,6 +363,18 @@ function onInterval(Client) {
           }
           },
           r => Bot.sendMessage('Cannot access Bus Information'))
+
+        fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
+          let stopLong = 0;
+          let stopLat = 0;
+          for (const dataField in data["stops"]) {
+            if (data["stops"][dataField]["id"] === 4235134) {
+              stopLat = data["stops"][dataField]["position"][0]
+              stopLong = = data["stops"][dataField]["position"][0]
+            }
+          }
+          },
+        r => Bot.sendMessage('Cannot access Bus Information'))
         //Bot.sendMessage("Second");
   }
 }

@@ -74,10 +74,9 @@ async function onMessage(msg) {
       msg.channel.send(`Random Stop: ${stopsData["stops"][getRandomInt(107)]["name"]}`);
     }
 
-}
-
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
+    if (msg.content === '!showMap'){
+      msg.channel.send('Map of the Charlottesville', {files: ["./Map.png"]});
+    }
 }
 
 // Behavior independent of messages goes here.
@@ -117,37 +116,35 @@ function onInterval(Client) {
         }
 
         let bussesData = await getBusses()
+
         // console.log(myStop);
         // console.log(previousStop);
 
-        for (const property in bussesData["vehicles"]){
-          if (bussesData["vehicles"][property]["next_stop"] == previousStop["id"]){
-            Bot.sendMessage("Your bus is approaching the stop before yours");
-            console.log (bussesData["vehicles"][property]);
-          }
-
-          if (bussesData["vehicles"][property]["current_stop_id"] == previousStop["id"]){
-            Bot.sendMessage("Your bus is at the stop before yours");
-            console.log (bussesData["vehicles"][property]);
-          }
-
-          if (bussesData["vehicles"][property]["next_stop"] == myStop["id"]){
-            Bot.sendMessage("Your bus is approaching your stop");
-            console.log (bussesData["vehicles"][property]);
-          }
-
-        }
-
-        //var stringData = JSON.stringify(bussesData);
-        // for (const property in bussesData["vehicles"]) {
-        //   let x = bussesData["vehicles"][property]["position"][0];
-        //   let y = bussesData["vehicles"][property]["position"][1];
-        //   let stopx = myStop["position"][0];
-        //   let stopy = myStop["position"][1];
-        //   if (Math.sqrt(Math.pow(x-stopx,2)+Math.pow(y-stopy,2))<=0.003){
-        //     Bot.sendMessage("Your bus is approaching the bus stop!")
+        // for (const property in bussesData["vehicles"]){
+        //   if (bussesData["vehicles"][property]["next_stop"] == previousStop["id"]){
+        //     Bot.sendMessage("Your bus is approaching the stop before yours");
         //   }
+        //
+        //   if (bussesData["vehicles"][property]["current_stop_id"] == previousStop["id"]){
+        //     Bot.sendMessage("Your bus is at the stop before yours");
+        //   }
+        //
+        //   if (bussesData["vehicles"][property]["next_stop"] == myStop["id"]){
+        //     Bot.sendMessage("Your bus is approaching your stop");
+        //   }
+        //
         // }
+
+        var stringData = JSON.stringify(bussesData);
+        for (const property in bussesData["vehicles"]) {
+          let x = bussesData["vehicles"][property]["position"][0];
+          let y = bussesData["vehicles"][property]["position"][1];
+          let stopx = myStop["position"][0];
+          let stopy = myStop["position"][1];
+          if ((Math.abs(x-stopx)<=0.003) && (Math.abs(x-stopx)<=0.003)){
+            Bot.sendMessage("There is a bus in the zone!!!")
+          }
+        }
 
     }
 }

@@ -27,6 +27,27 @@ async function onMessage(msg) {
       ' I am a second year student and I study computer science.'+
       ' I like watching TV and playing computer games.');
     }
+
+    const Discord = require('discord.js');
+    const exampleEmbed = new Discord.MessageEmbed()
+    	.setColor('#0099ff')
+    	.setTitle('Test')
+    	.setAuthor('Serhii')
+    	.setDescription('Test of embeded messages!')
+    	.addFields(
+    		{ name: 'Regular field title', value: 'Some value here' },
+    		{ name: '\u200B', value: '\u200B' },
+    		{ name: 'Inline field title', value: 'Some value here', inline: true },
+    		{ name: 'Inline field title', value: 'Some value here', inline: true },
+    	)
+    	.addField('Inline field title', 'Some value here', true)
+    	.setTimestamp()
+    	.setFooter('Some footer text here');
+
+    if(msg.content === '!test'){
+      msg.channel.send(exampleEmbed);
+    }
+
     if(msg.content === '!weather'){
       let getWeather = async () => {
         let response = await axios.get('http://api.openweathermap.org/data/2.5/weather?q=Charlottesville&appid=8c7aec8bcf09c0c9181b2258c865837c')

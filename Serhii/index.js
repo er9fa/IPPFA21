@@ -41,6 +41,7 @@ async function onMessage(msg) {
     		{ name: 'Inline field title', value: 'Some value here', inline: true },
     	)
     	.addField('Inline field title', 'Some value here', true)
+      .setImage('https://image.shutterstock.com/image-photo/view-metro-link-shuttle-bus-600w-1939366444.jpg')
     	.setTimestamp()
     	.setFooter('Some footer text here');
 

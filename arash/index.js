@@ -1,6 +1,7 @@
 require('dotenv').config();
 const Bot = new (require('discord.js').Client)();
 const fetch = require('node-fetch');
+const Discord = require('discord.js');
 
 var TOKEN = process.env.DISCORDTOKEN;
 var NAME = process.env.DISCORDNAME;
@@ -22,39 +23,80 @@ Bot.on('error', err => {
 
 // Dictates bot behavior when it sees a message being sent.
 async function onMessage(msg) {
-  if(msg.content === 'hi')
+  if(msg.content === 'hi') {
     msg.channel.send('Hi Arash! I hope you are doing well!')
+  }
+
+  else if(msg.content === 'embedtest') {
+    const exampleEmbed = new Discord.MessageEmbed()
+      .setColor('#04446f')
+      .setTitle('Test of Embedded Messages')
+      .setAuthor("Arash's Bot")
+      .addFields(
+        { name: 'Regular field title', value: 'Some value here' },
+    	)
+      .setDescription('Here is a test of embedded messages')
+      .setTimestamp()
+    msg.channel.send(exampleEmbed)
+  }
 
   else if(msg.content === 'allbuses!') {
     fetch("https://api.devhub.virginia.edu/v1/transit/routes/").then(r => r.json()).then(data => {
       var routesLength = data.routes.length;
-      var arr = []
+      var longarr = []
+      var shortarr = []
       for (var i = 0; i < routesLength; i++) {
-      	arr.push(data.routes[i].long_name + " or " + data.routes[i].short_name)
-       }
-      msg.channel.send(arr)},
+      	longarr.push(data.routes[i].long_name);
+        shortarr.push(data.routes[i].short_name);
+      }
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#407294')
+       .setAuthor("Arash's Bot")
+       .setTitle('List of All Buses')
+       .setDescription('Each bus below are able to be used by students at UVA')
+       .addFields(
+         { name: 'Full Name', value: longarr, inline: true },
+         { name: 'Shortened Name', value: shortarr, inline: true},
+     	 )
+       .setTimestamp()
+      msg.channel.send(exampleEmbed)},
       r => msg.channel.send('Cannot access weather'))
   }
 
   else if(msg.content === 'buses!') {
     fetch("https://api.devhub.virginia.edu/v1/transit/routes/").then(r => r.json()).then(data => {
       var routesLength = data.routes.length;
-      var arr = [];
-      var inactiveArr = [];
+      var longActiveArr = [];
+      var longInactiveArr = [];
+      var shortActiveArr = [];
+      var shortInactiveArr = [];
       for (var i = 0; i < routesLength; i++) {
         if (data.routes[i].is_active === true) {
-      		arr.push(data.routes[i].long_name + " or " + data.routes[i].short_name)
+      		longActiveArr.push(data.routes[i].long_name);
+          shortActiveArr.push(data.routes[i].short_name);
         }
        }
       for (var i = 0; i < routesLength; i++) {
        if (data.routes[i].is_active === false) {
-      		inactiveArr.push(data.routes[i].long_name + " or " + data.routes[i].short_name)
+      		longInactiveArr.push(data.routes[i].long_name);
+          shortInactiveArr.push(data.routes[i].short_name);
        }
       }
-      msg.channel.send("Active buses: ")
-      msg.channel.send(arr)
-      msg.channel.send("Inactive buses: ")
-      msg.channel.send(inactiveArr)},
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Active and Inactive Buses')
+       .setDescription('The active buses below can be currently used while inactive buses cannot be used currently.')
+       .addFields(
+         { name: 'Full Name for Active Buses', value: longActiveArr, inline: true },
+         { name: 'Shortened Name for Active Buses', value: shortActiveArr, inline: true},
+         { name: '\u200B', value: '\u200B' },
+         { name: 'Full Name for Inactive Buses', value: longInactiveArr, inline: true },
+         { name: 'Shortened Name for Inactive Buses', value: shortInactiveArr, inline: true},
+     	 )
+       .setTimestamp()
+       .setFooter("Use buses! command anytime you want to see active and inactive buses")
+      msg.channel.send(exampleEmbed)},
       r => msg.channel.send('Cannot access weather'))
   }
 
@@ -363,7 +405,7 @@ function onInterval(Client) {
           }
           },
           r => Bot.sendMessage('Cannot access Bus Information'))
-
+        /*
         fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
           let stopLong = 0;
           let stopLat = 0;
@@ -376,6 +418,7 @@ function onInterval(Client) {
           },
         r => Bot.sendMessage('Cannot access Bus Information'))
         //Bot.sendMessage("Second");
+        */
   }
 }
 // Requires Nodejs v14.6.0

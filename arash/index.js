@@ -58,9 +58,10 @@ async function onMessage(msg) {
                               'Lists all stop locations for Redline Express']
     const exampleEmbed = new Discord.MessageEmbed()
       .setColor('#83A4BA')
-      .setAuthor("Arash's Bot")
+      .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
       .setTitle('List of Commands')
       .setDescription('Below are all the commands and their functions')
+      .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
       .addFields(
         { name: 'Command', value: helpCMDS, inline: true },
         { name: 'Command Function', value: helpDescriptions, inline: true},
@@ -81,9 +82,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('List of All Buses')
        .setDescription('Each bus below are able to be used at UVA')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'Full Name', value: longarr, inline: true },
          { name: 'Shortened Name', value: shortarr, inline: true},
@@ -115,9 +117,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Active and Inactive Bus Routes')
        .setDescription('The active routes below can be currently used while inactive routes cannot be used currently.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'Full Name for Active Routes', value: longActiveArr, inline: true },
          { name: 'Shortened Name for Active Routes', value: shortActiveArr, inline: true},
@@ -168,9 +171,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('29 North CONNECT Stops')
        .setDescription('The location of all stops for the 29 North CONNECT routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All 29N Stop Locations', value: stopArr, inline: true },
      	 )
@@ -197,9 +201,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Buckingham East CONNECT Stops')
        .setDescription('The location of all stops for the Buckingham East CONNECT routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All BUCK-E Stop Locations', value: stopArr, inline: true },
      	 )
@@ -226,9 +231,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Buckingham North CONNECT Stops')
        .setDescription('The location of all stops for the Buckingham North CONNECT routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All BUCK-N Stop Locations', value: stopArr, inline: true },
      	 )
@@ -255,9 +261,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Lovingston CONNECT Stops')
        .setDescription('The location of all stops for the Lovingston CONNECT routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All LOVE Stop Locations', value: stopArr, inline: true },
      	 )
@@ -284,9 +291,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Blueline Stops')
        .setDescription('The location of all stops for the Blueline routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All BLUE Stop Locations', value: stopArr, inline: true },
      	 )
@@ -313,9 +321,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Redline Stops')
        .setDescription('The location of all stops for the Redline routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All RED Stop Locations', value: stopArr, inline: true },
      	 )
@@ -342,9 +351,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Crozet CONNECT Loop Stops')
        .setDescription('The location of all stops for the Crozet CONNECT Loop routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All CROZ-L Stop Locations', value: stopArr, inline: true },
      	 )
@@ -371,9 +381,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Silver Line Stops')
        .setDescription('The location of all stops for the Silver Line routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All SLV Stop Locations', value: stopArr, inline: true },
      	 )
@@ -400,9 +411,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Green Line Stops')
        .setDescription('The location of all stops for the Green Line routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All GRN Stop Locations', value: stopArr, inline: true },
      	 )
@@ -429,9 +441,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Gold Line Stops')
        .setDescription('The location of all stops for the Gold Line routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All GL Stop Locations', value: stopArr, inline: true },
      	 )
@@ -458,9 +471,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Orange Line Stops')
        .setDescription('The location of all stops for the Orange Line routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All OR Stop Locations', value: stopArr, inline: true },
      	 )
@@ -487,9 +501,10 @@ async function onMessage(msg) {
       }
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
-       .setAuthor("Arash's Bot")
+       .setAuthor("Arash's Bot", "https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg")
        .setTitle('Redline Express Stops')
        .setDescription('The location of all stops for the Redline Express routes are listed.')
+       .setThumbnail('https://www.piedmontforum.com/wp-content/uploads/2017/05/busdriver.jpg')
        .addFields(
          { name: 'All RDX Stop Locations', value: stopArr, inline: true },
      	 )

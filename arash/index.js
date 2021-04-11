@@ -40,7 +40,37 @@ async function onMessage(msg) {
     msg.channel.send(exampleEmbed)
   }
 
-  else if(msg.content === 'allbuses!') {
+  else if(msg.content === '!help') {
+      var helpCMDS = ['!allbuses', '!buses', '!29Nstops', '!BUCK-Estops', '!BUCK-Nstops', '!LOVEstops', '!BLUEstops', '!REDstops', '!CROZ-Lstops', '!SLVstops', '!GRNstops', '!GLstops', '!ORstops', '!RDXstops'];
+      var helpDescriptions = ['Lists all bus routes available at UVA',
+                              'Lists active and inactive bus routes',
+                              'Lists all stop locations for 29 North CONNECT',
+                              'Lists all stop locations for Buckingham East CONNECT',
+                              'Lists all stop locations for Buckingham North CONNECT',
+                              'Lists all stop locations for Lovingston CONNECT',
+                              'Lists all stop locations for Blueline',
+                              'Lists all stop locations for Redline',
+                              'Lists all stop locations for Crozet CONNECT Loop',
+                              'Lists all stop locations for Silver Line',
+                              'Lists all stop locations for Green Line',
+                              'Lists all stop locations for Gold Line',
+                              'Lists all stop locations for Orange Line',
+                              'Lists all stop locations for Redline Express']
+    const exampleEmbed = new Discord.MessageEmbed()
+      .setColor('#83A4BA')
+      .setAuthor("Arash's Bot")
+      .setTitle('List of Commands')
+      .setDescription('Below are all the commands and their functions')
+      .addFields(
+        { name: 'Command', value: helpCMDS, inline: true },
+        { name: 'Command Function', value: helpDescriptions, inline: true},
+      )
+      .setTimestamp()
+      .setFooter("Use !help command anytime you want to see all commands and their uses")
+    msg.channel.send(exampleEmbed)
+  }
+
+  else if(msg.content === '!allbuses') {
     fetch("https://api.devhub.virginia.edu/v1/transit/routes/").then(r => r.json()).then(data => {
       var routesLength = data.routes.length;
       var longarr = []
@@ -50,20 +80,21 @@ async function onMessage(msg) {
         shortarr.push(data.routes[i].short_name);
       }
       const exampleEmbed = new Discord.MessageEmbed()
-       .setColor('#407294')
+       .setColor('#83A4BA')
        .setAuthor("Arash's Bot")
        .setTitle('List of All Buses')
-       .setDescription('Each bus below are able to be used by students at UVA')
+       .setDescription('Each bus below are able to be used at UVA')
        .addFields(
          { name: 'Full Name', value: longarr, inline: true },
          { name: 'Shortened Name', value: shortarr, inline: true},
      	 )
        .setTimestamp()
+       .setFooter("Use !allbuses command anytime you want to see all bus route names")
       msg.channel.send(exampleEmbed)},
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'buses!') {
+  else if(msg.content === '!buses') {
     fetch("https://api.devhub.virginia.edu/v1/transit/routes/").then(r => r.json()).then(data => {
       var routesLength = data.routes.length;
       var longActiveArr = [];
@@ -85,17 +116,17 @@ async function onMessage(msg) {
       const exampleEmbed = new Discord.MessageEmbed()
        .setColor('#83A4BA')
        .setAuthor("Arash's Bot")
-       .setTitle('Active and Inactive Buses')
-       .setDescription('The active buses below can be currently used while inactive buses cannot be used currently.')
+       .setTitle('Active and Inactive Bus Routes')
+       .setDescription('The active routes below can be currently used while inactive routes cannot be used currently.')
        .addFields(
-         { name: 'Full Name for Active Buses', value: longActiveArr, inline: true },
-         { name: 'Shortened Name for Active Buses', value: shortActiveArr, inline: true},
+         { name: 'Full Name for Active Routes', value: longActiveArr, inline: true },
+         { name: 'Shortened Name for Active Routes', value: shortActiveArr, inline: true},
          { name: '\u200B', value: '\u200B' },
-         { name: 'Full Name for Inactive Buses', value: longInactiveArr, inline: true },
-         { name: 'Shortened Name for Inactive Buses', value: shortInactiveArr, inline: true},
+         { name: 'Full Name for Inactive Routes', value: longInactiveArr, inline: true },
+         { name: 'Shortened Name for Inactive Routes', value: shortInactiveArr, inline: true},
      	 )
        .setTimestamp()
-       .setFooter("Use buses! command anytime you want to see active and inactive buses")
+       .setFooter("Use buses! command anytime you want to see active and inactive bus routes")
       msg.channel.send(exampleEmbed)},
       r => msg.channel.send('Cannot access weather'))
   }
@@ -121,7 +152,7 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '29Nstops!') {
+  else if(msg.content === '!29Nstops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -135,13 +166,22 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all 29 North CONNECT Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('29 North CONNECT Stops')
+       .setDescription('The location of all stops for the 29 North CONNECT routes are listed.')
+       .addFields(
+         { name: 'All 29N Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !29Nstops command anytime you want to see 29N stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'BUCK-Estops!') {
+  else if(msg.content === '!BUCK-Estops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -155,13 +195,22 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all Buckingham East CONNECT Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Buckingham East CONNECT Stops')
+       .setDescription('The location of all stops for the Buckingham East CONNECT routes are listed.')
+       .addFields(
+         { name: 'All BUCK-E Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !BUCK-Estops command anytime you want to see BUCK-E stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'BUCK-Nstops!') {
+  else if(msg.content === '!BUCK-Nstops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -175,13 +224,22 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all Buckingham North CONNECT Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Buckingham North CONNECT Stops')
+       .setDescription('The location of all stops for the Buckingham North CONNECT routes are listed.')
+       .addFields(
+         { name: 'All BUCK-N Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !BUCK-Nstops command anytime you want to see BUCK-N stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'LOVEstops!') {
+  else if(msg.content === '!LOVEstops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -195,13 +253,22 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all Lovingston CONNECT Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Lovingston CONNECT Stops')
+       .setDescription('The location of all stops for the Lovingston CONNECT routes are listed.')
+       .addFields(
+         { name: 'All LOVE Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !LOVEstops command anytime you want to see LOVE stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'BLUEstops!') {
+  else if(msg.content === '!BLUEstops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -215,13 +282,22 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all Blueline Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Blueline Stops')
+       .setDescription('The location of all stops for the Blueline routes are listed.')
+       .addFields(
+         { name: 'All BLUE Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !BLUEstops command anytime you want to see BLUE stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'REDstops!') {
+  else if(msg.content === '!REDstops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -235,13 +311,22 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all Redline Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Redline Stops')
+       .setDescription('The location of all stops for the Redline routes are listed.')
+       .addFields(
+         { name: 'All RED Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !REDstops command anytime you want to see RED stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'CROZ-Lstops!') {
+  else if(msg.content === '!CROZ-Lstops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -255,13 +340,22 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all Crozet CONNECT Loop Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Crozet CONNECT Loop Stops')
+       .setDescription('The location of all stops for the Crozet CONNECT Loop routes are listed.')
+       .addFields(
+         { name: 'All CROZ-L Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !CROZ-Lstops command anytime you want to see CROZ-L stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'SLVstops!') {
+  else if(msg.content === '!SLVstops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -275,13 +369,22 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all Silver Line Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Silver Line Stops')
+       .setDescription('The location of all stops for the Silver Line routes are listed.')
+       .addFields(
+         { name: 'All SLV Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !SLVstops command anytime you want to see SLV stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'GRNstops!') {
+  else if(msg.content === '!GRNstops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -295,13 +398,22 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all Green Line Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Green Line Stops')
+       .setDescription('The location of all stops for the Green Line routes are listed.')
+       .addFields(
+         { name: 'All GRN Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !GRNstops command anytime you want to see GRN stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'GLstops!') {
+  else if(msg.content === '!GLstops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -315,13 +427,22 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all Gold Line Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Gold Line Stops')
+       .setDescription('The location of all stops for the Gold Line routes are listed.')
+       .addFields(
+         { name: 'All GL Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !GLstops command anytime you want to see GL stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'ORstops!') {
+  else if(msg.content === '!ORstops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -335,13 +456,22 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all Orange Line Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Orange Line Stops')
+       .setDescription('The location of all stops for the Orange Line routes are listed.')
+       .addFields(
+         { name: 'All OR Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !ORstops command anytime you want to see OR stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'RDXstops!') {
+  else if(msg.content === '!RDXstops') {
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
@@ -355,8 +485,17 @@ async function onMessage(msg) {
           }
         }
       }
-      msg.channel.send("List of all Redline Express Stops: ");
-      msg.channel.send(stopArr);
+      const exampleEmbed = new Discord.MessageEmbed()
+       .setColor('#83A4BA')
+       .setAuthor("Arash's Bot")
+       .setTitle('Redline Express Stops')
+       .setDescription('The location of all stops for the Redline Express routes are listed.')
+       .addFields(
+         { name: 'All RDX Stop Locations', value: stopArr, inline: true },
+     	 )
+       .setTimestamp()
+       .setFooter("Use !RDXstops command anytime you want to see RDX stop locations.")
+      msg.channel.send(exampleEmbed);
       },
       r => msg.channel.send('Cannot access weather'))
   }

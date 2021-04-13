@@ -1,6 +1,7 @@
 require('dotenv').config();
 const Bot = new (require('discord.js').Client)();
 const fetch = require('node-fetch');
+const Discord = require('discord.js');
 
 var TOKEN = process.env.DISCORDTOKEN;
 var NAME = process.env.DISCORDNAME;
@@ -151,25 +152,47 @@ async function onMessage(msg) {
     arrived.clear();
     msg.channel.send("All await requests cleared")
   }
-  else if(msg.content==="!lookup"){
+  else if(msg.content.startsWith("!lookup")){
+    const request = msg.content.split(" ");
+    const lookupEmbed = new Discord.MessageEmbed()
+      .setTitle('Bus Stop Lookup')
+    let search = "";
+    if(request.length>1)
+      search = request[1];
+    else {
+      lookupEmbed.setDescription("Please add a search term.");
+      msg.channel.send(lookupEmbed);
+      return;
+    }
     let s = "";
-    //console.log(stopID);
-    let counter=0;
+    let t = "";
     for(const key of Array.from(stopID, x=>x[0]).sort()){
-      s+=key+": "+stopID.get(key)+"\n";
-      counter++;
-      if(counter===25){
-        msg.channel.send(s);
-        s="";
-        counter=0;
+      if(key.toUpperCase().startsWith(search.toUpperCase())){
+        //s+=key+": "+stopID.get(key)+"\n";
+        s+=key+"\n";
+        t+=stopID.get(key)+"\n";
       }
     }
-    if(s!="")
-      msg.channel.send(s);
+    console.log(s);
+    if(s!=""){
+      lookupEmbed.addFields({ name: 'Stop Name', value: s, inline:true},
+                            { name: 'ID', value: t, inline:true});
+    }
+    else{
+      lookupEmbed.setDescription("No bus stops found. Try changing your search term");
+    }
+    msg.channel.send(lookupEmbed);
   }
   else if(msg.content === "!printStatus"){
     console.log(arriving);
     console.log(arrived);
+  }
+  else if(msg.content.startsWith("!test")){
+    const request = msg.content.split(" ");
+    let route = routeID.get(request[2]);
+    const s = generateEmbed(parseInt(request[1]), route);
+    console.log(request);
+    msg.channel.send(s);
   }
 }
 
@@ -183,21 +206,72 @@ function updateBuses(){
         new_buses.push(bus[1]);
     }
     if(new_buses.length>0)
-      for(const bus_route of new_buses)
-        Bot.sendMessage(`Alert: A ${routeNames.get(bus_route)} bus is one stop away from ${stopNames.get(stop)}!`,CHANNEL);
-
+      for(const bus_route of new_buses){
+        //Bot.sendMessage(`Alert: A ${routeNames.get(bus_route)} bus is one stop away from ${stopNames.get(stop)}!`,CHANNEL);
+        Bot.sendMessage(generateEmbed(bus_route, stop),CHANNEL);
+      }
     new_buses = [];
     for(const bus of arrived_buses){
       if(!arrived.get(stop).has(bus[0]))
         new_buses.push(bus[1]);
     }
     if(new_buses.length>0)
-      for(const bus_route of new_buses)
-        Bot.sendMessage(`Alert: A ${routeNames.get(bus_route)} bus has arrived at ${stopNames.get(stop)}!`,CHANNEL);
+      for(const bus_route of new_buses){
+        //Bot.sendMessage(`Alert: A ${routeNames.get(bus_route)} bus has arrived at ${stopNames.get(stop)}!`,CHANNEL);
+        Bot.sendMessage(generateEmbed(bus_route, stop),CHANNEL);
+      }
     arriving.set(stop, new Set(arriving_buses.map(x=>x[0])))
     arrived.set(stop, new Set(arrived_buses.map(x=>x[0])))
   }
 
+}
+
+function generateEmbed(stop_id, route_id){
+  route_name = routeNames.get(route_id)
+  stop_name = stopNames.get(stop_id)
+  let color="";
+  let name="";
+  if(route_name==="RED"){
+    color="RED";
+    name="Redline";
+  }else if(route_name==="RDX"){
+    color="DARK_RED";
+    name="Redline Express";
+  }else if(route_name==="BLUE"){
+    color="BLUE";
+    name="Blueline";
+  }else if(route_name==="GL"){
+    color="GOLD";
+    name="Gold Line";
+  }else if(route_name==="GRN"){
+    color="GREEN";
+    name="Green Line";
+  }else if(route_name==="OR"){
+    color="ORANGE";
+    name="Orange Line";
+  }else if(route_name==="SLV"){
+    color="LIGHT_GREY";
+    name="Silver Line";
+  }else{
+    color="BLURPLE";
+    name=route_name;
+  }
+  const busEmbed = new Discord.MessageEmbed()
+  .attachFiles(['./Bus.jpg', './Map.png'])
+	.setColor(color)
+	.setTitle('Bus Arrival')
+	.setAuthor('BusBot', 'attachment://Bus.jpg', 'https://uva.transloc.com/')
+	.setDescription('A bus is arriving at your stop!')
+	.setThumbnail('attachment://Bus.jpg')
+	.addFields(
+		{ name: 'Stop', value: stop_name, inline: true },
+		{ name: 'Route', value: name, inline: true },
+    { name: 'Bus Number', value: "???", inline: true},
+	)
+	.setImage("attachment://Map.png")
+	.setTimestamp()
+	.setFooter('Please rate our bot.', 'https://i.imgur.com/wSTFkRM.png');
+  return busEmbed;
 }
 
 // Behavior independent of messages goes here.

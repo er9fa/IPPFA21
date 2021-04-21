@@ -2,6 +2,7 @@ require('dotenv').config();
 const Bot = new (require('discord.js').Client)();
 const fetch = require('node-fetch');
 const Discord = require('discord.js');
+const client = new Discord.Client();
 
 var TOKEN = process.env.DISCORDTOKEN;
 var NAME = process.env.DISCORDNAME;
@@ -25,6 +26,15 @@ Bot.on('error', err => {
 async function onMessage(msg) {
   if(msg.content === 'hi') {
     msg.channel.send('Hi Arash! I hope you are doing well!')
+  }
+
+  else if(msg.content === '!msg Alderman Rd @ Gooch/Dillard (Southbound)') {
+    msg.channel.send(`<@&${'831631689871523911'}> ${'Hi!'}`)
+    //msg.channel.send("<@& " + 831631689871523911 + ">" + 'Hi!');
+  }
+
+  else if(msg.content === '!clearRoles') {
+    roles.clear();
   }
 
   else if(msg.content === 'embedtest') {

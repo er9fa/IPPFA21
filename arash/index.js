@@ -37,6 +37,12 @@ async function onMessage(msg) {
     roles.clear();
   }
 
+  else if(msg.content === '!checkRole Alderman Rd @ Gooch/Dillard (Southbound)') {
+    if(msg.guild.roles.cache.find(r => r.name === 'Alderman Rd @ Gooch/Dillard (Southbound)')){
+        msg.channel.send("Role was found.");
+    }
+  }
+
   else if(msg.content === 'embedtest') {
     const exampleEmbed = new Discord.MessageEmbed()
       .setColor('#04446f')

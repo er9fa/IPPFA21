@@ -83,79 +83,7 @@ async function onMessage(msg) {
   }
   else if(msg.content.startsWith("!await")){
     const request = msg.content.split(" ");
-    const awaitEmbed = new Discord.MessageEmbed().setTitle('New Await Request');
-    if(request.length===1)
-      awaitEmbed.setDescription("Not enough arguments. Please specify bus stop id, optionally followed by bus routes");
-    else{
-      if(!stopNames.has(parseInt(request[1])))
-        awaitEmbed.setDescription("Invalid bus stop ID; please try again");
-        //msg.channel.send("Invalid bus stop ID; please try again");
-      else if(request.length===2){ //no route parameters
-        //let s="";
-        if(waiting.has(parseInt(request[1])))
-          awaitEmbed.setDescription("Overwriting previous await request at"+stopNames.get(parseInt(request[1]))+'\n');
-        else
-          awaitEmbed.setDescription("New await request created!");
-        waiting.set(parseInt(request[1]), null);
-        arriving.set(parseInt(request[1]), new Set());
-        arrived.set(parseInt(request[1]), new Set());
-        //msg.channel.send(s+`Now awaiting: ${stopNames.get(parseInt(request[1]))}\nRoutes: all`);
-        awaitEmbed.addFields(
-      		{ name: 'Stop', value: stopNames.get(parseInt(request[1])), inline: true },
-      		{ name: 'Routes', value: "All", inline: true },
-      	)
-        updateBuses();
-
-      }
-      else{ //route parameters
-        let routes = [];
-        let invalid = [];
-        for(let i=2; i<request.length; i++){
-          if(!isNaN(request[i]) && routeNames.has(parseInt(request[i])))
-            routes.push(parseInt(request[i]));
-          else if(routeID.has(request[i].toUpperCase()))
-            routes.push(routeID.get(request[i].toUpperCase()));
-          else
-            invalid.push(request[i]);
-        }
-        if(routes.length===0)
-          awaitEmbed.setDescription("Invalid bus route(s) specified; please try again"); //nothing is set
-        else{
-          if(waiting.has(parseInt(request[1])))
-            awaitEmbed.setDescription("Overwriting previous await request at"+stopNames.get(parseInt(request[1]))+'\n');
-          else
-            awaitEmbed.setDescription("New await request created!");
-          waiting.set(parseInt(request[1]), routes);
-          arriving.set(parseInt(request[1]), new Set());
-          arrived.set(parseInt(request[1]), new Set());
-          //s += `Now awaiting: ${stopNames.get(parseInt(request[1]))}\nRoutes: ${routes.map(x=>routeNames.get(x))}`;
-          let rn = routes.map(x=>routeNames.get(x));
-          //let s = "";
-          //rn.forEach(element=>s += element+"\n")
-          awaitEmbed.addFields(
-        		{ name: 'Stop', value: stopNames.get(parseInt(request[1])), inline: true },
-        		{ name: 'Routes', value: rn, inline: true },
-        	)
-          if(invalid.length>0){
-            //let s="";
-            //invalid.forEach(element=>s += element+"\n");
-            awaitEmbed.addFields('Invalid Arguments',invalid, true)
-          }
-          let inactive=[];
-          for(const r of routes){
-            const data = await fetch("https://api.devhub.virginia.edu/v1/transit/routes/"+r).then(r=>r.json());
-            if(data.routes.is_active===false)
-              inactive.push(data.routes.short_name);
-          }
-          if(inactive.length>0){
-            //let s="";
-            //inactive.forEach(element=>s += element+"\n");
-            awaitEmbed.addField('Warning: The following route(s) are currently inactive:', inactive);
-          }
-          updateBuses();
-        }
-      }
-    }
+    const awaitEmbed = await awaitRequest(request);
     msg.channel.send(awaitEmbed);
   }
 
@@ -205,7 +133,7 @@ async function onMessage(msg) {
       }
     }
 */
-  }
+
   else if(msg.content.startsWith("!lookup")){
     const request = msg.content.split(" ");
     const lookupEmbed = new Discord.MessageEmbed()
@@ -238,9 +166,9 @@ async function onMessage(msg) {
     msg.channel.send(lookupEmbed);
   }
 
-  else if(msg.content.toLowerCase().startsWith("!addStop ")){
+  else if(msg.content.toLowerCase().startsWith("!addstop")){
     const request = msg.content.split(" ");
-    const embed = new Discord.MessageEmbed()
+    const embed = new Discord.MessageEmbed().setTitle("Bus Stop Role Assignment");
     if(request.length===1 || parseInt(request[1])===NaN)
       embed.setDescription("Please enter a valid stop ID.");
     else{
@@ -256,9 +184,9 @@ async function onMessage(msg) {
     }
     msg.channel.send(embed);
   }
-  else if(msg.content.toLowerCase().startsWith("!removeStop ")){
+  else if(msg.content.toLowerCase().startsWith("!removestop")){
     const request = msg.content.split(" ");
-    const embed = new Discord.MessageEmbed()
+    const embed = new Discord.MessageEmbed().setTitle("Bus Stop Role Assignment");
     if(request.length===1 || parseInt(request[1])===NaN)
       embed.setDescription("Please enter a valid stop ID.");
     else{
@@ -294,9 +222,9 @@ async function onMessage(msg) {
   else if(msg.content.toLowerCase()==="!help"){
     var helpCMDS = ['!refresh','!await','!status','!clearAll','!lookup', '!addStop', '!removeStop'];
     var helpDescriptions = ['Immediately refreshes bus data',
-                            'Creates an await request at a given bus stop (and route(s))',
+                            'Creates an await request at a given bus stop',// (and route(s))',
                             'Shows created await requests',
-                            'Deletes all active await requests'
+                            'Deletes all active await requests',
                             'Looks up bus stop IDs by name/search term',
                             'Adds a role corresponding to a bus stop',
                             'Removes a role']
@@ -314,6 +242,83 @@ async function onMessage(msg) {
     .setFooter("Use !help command anytime to view all commands.")
   msg.channel.send(helpEmbed)
   }
+}
+
+async function awaitRequest(request){
+  const awaitEmbed = new Discord.MessageEmbed().setTitle('New Await Request');
+  if(request.length===1)
+    awaitEmbed.setDescription("Not enough arguments. Please specify bus stop id, optionally followed by bus routes");
+  else{
+    if(!stopNames.has(parseInt(request[1])))
+      awaitEmbed.setDescription("Invalid bus stop ID; please try again");
+      //msg.channel.send("Invalid bus stop ID; please try again");
+    else if(request.length===2){ //no route parameters
+      //let s="";
+      if(waiting.has(parseInt(request[1])))
+        awaitEmbed.setDescription("Overwriting previous await request at"+stopNames.get(parseInt(request[1]))+'\n');
+      else
+        awaitEmbed.setDescription("New await request created!");
+      waiting.set(parseInt(request[1]), null);
+      arriving.set(parseInt(request[1]), new Set());
+      arrived.set(parseInt(request[1]), new Set());
+      //msg.channel.send(s+`Now awaiting: ${stopNames.get(parseInt(request[1]))}\nRoutes: all`);
+      awaitEmbed.addFields(
+        { name: 'Stop', value: stopNames.get(parseInt(request[1])), inline: true },
+        { name: 'Routes', value: "All", inline: true },
+      )
+      updateBuses();
+
+    }
+    else{ //route parameters
+      let routes = [];
+      let invalid = [];
+      for(let i=2; i<request.length; i++){
+        if(!isNaN(request[i]) && routeNames.has(parseInt(request[i])))
+          routes.push(parseInt(request[i]));
+        else if(routeID.has(request[i].toUpperCase()))
+          routes.push(routeID.get(request[i].toUpperCase()));
+        else
+          invalid.push(request[i]);
+      }
+      if(routes.length===0)
+        awaitEmbed.setDescription("Invalid bus route(s) specified; please try again"); //nothing is set
+      else{
+        if(waiting.has(parseInt(request[1])))
+          awaitEmbed.setDescription("Overwriting previous await request at"+stopNames.get(parseInt(request[1]))+'\n');
+        else
+          awaitEmbed.setDescription("New await request created!");
+        waiting.set(parseInt(request[1]), routes);
+        arriving.set(parseInt(request[1]), new Set());
+        arrived.set(parseInt(request[1]), new Set());
+        //s += `Now awaiting: ${stopNames.get(parseInt(request[1]))}\nRoutes: ${routes.map(x=>routeNames.get(x))}`;
+        let rn = routes.map(x=>routeNames.get(x));
+        //let s = "";
+        //rn.forEach(element=>s += element+"\n")
+        awaitEmbed.addFields(
+          { name: 'Stop', value: stopNames.get(parseInt(request[1])), inline: true },
+          { name: 'Routes', value: rn, inline: true },
+        )
+        if(invalid.length>0){
+          //let s="";
+          //invalid.forEach(element=>s += element+"\n");
+          awaitEmbed.addFields('Invalid Arguments',invalid, true)
+        }
+        let inactive=[];
+        for(const r of routes){
+          const data = await fetch("https://api.devhub.virginia.edu/v1/transit/routes/"+r).then(r=>r.json());
+          if(data.routes.is_active===false)
+            inactive.push(data.routes.short_name);
+        }
+        if(inactive.length>0){
+          //let s="";
+          //inactive.forEach(element=>s += element+"\n");
+          awaitEmbed.addField('Warning: The following route(s) are currently inactive:', inactive);
+        }
+        updateBuses();
+      }
+    }
+  }
+  return awaitEmbed;
 }
 
 function updateBuses(){

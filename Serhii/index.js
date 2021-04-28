@@ -294,23 +294,35 @@ function onInterval(Client) {
 
         var array_of_busses = [];
         var array_of_routes = [];
+        var tracked = false;
+        var route = null;
 
         myStop = null;
         for (const prop in stops){
           array_of_busses = [];
           array_of_routes = [];
-          for (const pr in listOfTracked){
+          tracked = false;
+          route = null;
             myStop = stops[prop];
             for (const property in bussesData["vehicles"]) {
               let x = bussesData["vehicles"][property]["position"][0];
               let y = bussesData["vehicles"][property]["position"][1];
               let stopx = myStop["position"][0];
               let stopy = myStop["position"][1];
+              tracked = false;
+              route = null;
 
-              if ((Math.abs(x-stopx)<=1) && (Math.abs(x-stopx)<=1) && (listOfTracked[pr]== bussesData["vehicles"][property]["route_id"])){
+              for (const pr in listOfTracked){
+                if (bussesData["vehicles"][property]["route_id"] == listOfTracked[pr]){
+                  tracked = true;
+                  route = listOfTracked[pr];
+                }
+              }
+
+              if ((Math.abs(x-stopx)<=1) && (Math.abs(x-stopx)<=1) && (tracked == true)){
                 bussInZone = true;
                 array_of_busses.push(bussesData["vehicles"][property]["id"])
-                array_of_routes.push(listOfTracked[pr])
+                array_of_routes.push(route)
               }
             }
             if (bussInZone == true){
@@ -325,7 +337,6 @@ function onInterval(Client) {
               Bot.sendMessage(arrivalEmbed);
             }
             bussInZone = false;
-          }
         }
     }
 }

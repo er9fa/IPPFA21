@@ -20,10 +20,132 @@ Bot.on('error', err => {
     console.log(`[DISC] !! Error in bot ${NAME}:\n{err}`);
 });
 
+var listOfRoles = [];
+var listOfTracked = [];
 
 // Dictates bot behavior when it sees a message being sent.
 async function onMessage(msg) {
     const Discord = require('discord.js');
+
+    //roles
+    if (msg.content === "!roles"){
+      msg.channel.send("Test");
+      console.log(listOfRoles[0]['name']);
+    }
+
+    if (msg.content.startsWith("!deleteRoute")){
+      let index = 0;
+      let routeName = msg.content;
+      routeName = routeName.slice(msg.content.indexOf(" ") + 1);
+      for (const prop in listOfTracked){
+        if (routeName == listOfTracked[prop]){
+          index = prop;
+        }
+      }
+      listOfTracked.splice(index, 1);
+      const addRouteEmbed = new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('You deleted a route:')
+        .setAuthor('Serhii')
+        .setDescription(routeName)
+        .setTimestamp()
+        .setFooter('!deleteRoute to stop tracking route');
+      msg.channel.send(addRouteEmbed);
+    }
+
+    if (msg.content === "!routes"){
+      let getRoutes = async () => {
+        let response = await axios.get('https://api.devhub.virginia.edu/v1/transit/routes')
+        let routes = response.data
+        return routes
+      }
+
+      let routesData = await getRoutes()
+      let listOfRoutes = {}
+
+      for (const prop in routesData["routes"]){
+        listOfRoutes[routesData["routes"][prop]["id"]] = routesData["routes"][prop]["long_name"];
+      }
+
+      var ids = Object.keys(listOfRoutes);
+      var names = Object.values(listOfRoutes);
+
+      const arrivalEmbed = new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('All routes:')
+        .setAuthor('Serhii')
+        .setTimestamp()
+        .setFooter('!routes to get information about routes');
+      arrivalEmbed.addFields({ name: 'Routes ids', value: ids, inline: true });
+      arrivalEmbed.addFields({ name: 'Routes names', value: names, inline: true });
+      Bot.sendMessage(arrivalEmbed);
+
+      console.log(listOfRoutes);
+    }
+
+    if (msg.content.startsWith("!trackRoute")){
+      let routeName = msg.content;
+      routeName = routeName.slice(msg.content.indexOf(" ") + 1);
+      listOfTracked.push(routeName);
+
+      const addRouteEmbed = new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('New tracked route:')
+        .setAuthor('Serhii')
+        .setDescription(routeName)
+        .setTimestamp()
+        .setFooter('!trackRoute to add a route to track');
+      msg.channel.send(addRouteEmbed);
+      console.log(routeName);
+    }
+
+    if (msg.content.startsWith("!assignRole")){
+      let roleName = msg.content;
+      roleName = roleName.slice(msg.content.indexOf(" ") + 1);
+      roleName = roleName.slice(roleName.indexOf(" ") + 1);
+      console.log(roleName);
+      let role = msg.guild.roles.cache.find(r => r.name === roleName);
+      let member = msg.mentions.members.first();
+      member.roles.add(role).catch(console.error);
+      listOfRoles.push(role);
+
+      const addRoleEmbed = new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Your new role is:')
+        .setAuthor('Serhii')
+        .setDescription(roleName)
+        .setTimestamp()
+        .setFooter('!assignRole to add yourself to a role');
+      msg.channel.send(addRoleEmbed);
+    }
+
+
+    if (msg.content.startsWith("!deleteRole")){
+      let roleName = msg.content;
+      roleName = roleName.slice(msg.content.indexOf(" ") + 1);
+      roleName = roleName.slice(roleName.indexOf(" ") + 1);
+      console.log(roleName);
+      let role = msg.guild.roles.cache.find(r => r.name === roleName);
+      let member = msg.mentions.members.first();
+      member.roles.remove(role).catch(console.error);
+      let index = 0;
+      for (const prop in listOfRoles){
+        if (roleName == listOfRoles[prop]){
+          index = prop;
+        }
+      }
+      listOfRoles.splice(index, 1);
+
+      const addRoleEmbed = new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('You deleted a role:')
+        .setAuthor('Serhii')
+        .setDescription(roleName)
+        .setTimestamp()
+        .setFooter('!deleteRole to add yourself to a role');
+      msg.channel.send(addRoleEmbed);
+    }
+
 
     //Test
     if(msg.content === '!test'){
@@ -52,7 +174,9 @@ async function onMessage(msg) {
         .setTitle('!help')
         .setAuthor('Serhii')
         .setDescription('List of commands:\n!help - list of commands\n!weather - weather at Charlottesville'
-         + '\n!busses - list of busses at Charlottesville\n!map - a map of Charlottesville')
+         + '\n!busses - list of busses at Charlottesville\n!map - a map of Charlottesville'
+         + '\n!routes - list of routes\n!trackRoute - track a route\n!deleteRoute - stop tracking route'
+         + '\n!addRole - add a bus stop\n!deleteRole - delete a bus stop')
         .setTimestamp()
         .setFooter('Use !help to get a list of commands');
       msg.channel.send(helpEmbed)
@@ -101,12 +225,12 @@ async function onMessage(msg) {
 
       for (const property in bussesData["vehicles"]) {
         array_of_busses.push(bussesData["vehicles"][property]["id"])
-        array_of_stops.push(bussesData["vehicles"][property]["next_stop"])
+        array_of_stops.push(bussesData["vehicles"][property]["route_id"])
         array_of_curr.push(bussesData["vehicles"][property]["service_status"])
       }
 
       bussesEmbed.addFields({ name: 'Busses:', value: array_of_busses, inline: true });
-      bussesEmbed.addFields({ name: 'Next Stop:', value: array_of_stops, inline: true });
+      bussesEmbed.addFields({ name: 'Route id:', value: array_of_stops, inline: true });
       bussesEmbed.addFields({ name: 'Service Status:', value: array_of_curr, inline: true });
 
       msg.channel.send(bussesEmbed);
@@ -144,18 +268,15 @@ function onInterval(Client) {
         }
 
         let stopsData = await getStops()
-        let myStop = null;
+        let stops = [];
         let previousStop = null;
 
-        for (const property in stopsData["stops"]) {
-          if (stopsData["stops"][property]["id"] == 4248160){
-            myStop = stopsData["stops"][property];
+        for (const prop1 in stopsData["stops"]) {
+          for (const prop2 in listOfRoles){
+            if (stopsData["stops"][prop1]["name"] == listOfRoles[prop2]["name"]){
+              stops.push(stopsData["stops"][prop1]);
+            }
           }
-
-          if (stopsData["stops"][property]["id"] == 4235200){
-            previousStop = stopsData["stops"][property];
-          }
-
         }
 
         let getBusses = async () => {
@@ -169,51 +290,43 @@ function onInterval(Client) {
         var stringData = JSON.stringify(bussesData);
 
         var bussInZone = false;
-        const arrivalEmbed = new Discord.MessageEmbed()
-          .setColor('#0099ff')
-          .setTitle('There is a bus in the zone!')
-          .setAuthor('Serhii')
-          .setTimestamp()
-          .setFooter('Information about busses in zone');
+
 
         var array_of_busses = [];
-        var array_of_stops = [];
+        var array_of_routes = [];
 
-        for (const property in bussesData["vehicles"]) {
-          let x = bussesData["vehicles"][property]["position"][0];
-          let y = bussesData["vehicles"][property]["position"][1];
-          let stopx = myStop["position"][0];
-          let stopy = myStop["position"][1];
+        myStop = null;
+        for (const prop in stops){
+          array_of_busses = [];
+          array_of_routes = [];
+          for (const pr in listOfTracked){
+            myStop = stops[prop];
+            for (const property in bussesData["vehicles"]) {
+              let x = bussesData["vehicles"][property]["position"][0];
+              let y = bussesData["vehicles"][property]["position"][1];
+              let stopx = myStop["position"][0];
+              let stopy = myStop["position"][1];
 
-          if ((Math.abs(x-stopx)<=0.003) && (Math.abs(x-stopx)<=0.003)){
-            bussInZone = true;
-            array_of_busses.push(bussesData["vehicles"][property]["id"])
-            array_of_stops.push(bussesData["vehicles"][property]["next_stop"])
+              if ((Math.abs(x-stopx)<=1) && (Math.abs(x-stopx)<=1) && (listOfTracked[pr]== bussesData["vehicles"][property]["route_id"])){
+                bussInZone = true;
+                array_of_busses.push(bussesData["vehicles"][property]["id"])
+                array_of_routes.push(listOfTracked[pr])
+              }
+            }
+            if (bussInZone == true){
+              const arrivalEmbed = new Discord.MessageEmbed()
+                .setColor('#0099ff')
+                .setTitle(myStop["name"])
+                .setAuthor('Serhii')
+                .setTimestamp()
+                .setFooter('Information about busses in zone');
+              arrivalEmbed.addFields({ name: 'Busses', value: array_of_busses, inline: true });
+              arrivalEmbed.addFields({ name: 'Route', value: array_of_routes, inline: true });
+              Bot.sendMessage(arrivalEmbed);
+            }
+            bussInZone = false;
           }
         }
-
-        if (bussInZone == true){
-          arrivalEmbed.addFields({ name: 'Busses', value: array_of_busses, inline: true });
-          arrivalEmbed.addFields({ name: 'Next Stop', value: array_of_stops, inline: true });
-          Bot.sendMessage(arrivalEmbed);
-        }
-        bussInZone = false;
-
-        //CODE FOR NEXT AND PREVIOUS STOPS
-        // for (const property in bussesData["vehicles"]){
-        //   if (bussesData["vehicles"][property]["next_stop"] == previousStop["id"]){
-        //     Bot.sendMessage("Your bus is approaching the stop before yours");
-        //   }
-        //
-        //   if (bussesData["vehicles"][property]["current_stop_id"] == previousStop["id"]){
-        //     Bot.sendMessage("Your bus is at the stop before yours");
-        //   }
-        //
-        //   if (bussesData["vehicles"][property]["next_stop"] == myStop["id"]){
-        //     Bot.sendMessage("Your bus is approaching your stop");
-        //   }
-        //
-        // }
     }
 }
 
@@ -230,6 +343,8 @@ if(require.main === module) {
 
     setInterval(onInterval(Bot), 5000);
 }
+
+
 
 module.exports = {
     Bot: Bot,

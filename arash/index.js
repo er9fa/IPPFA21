@@ -24,39 +24,39 @@ Bot.on('error', err => {
 
 // Dictates bot behavior when it sees a message being sent.
 async function onMessage(msg) {
-  if(msg.content === 'hi') {
+  if(msg.content === 'hi') { //Sends message based on whether "hi" is entered into chat
     msg.channel.send('Hi Arash! I hope you are doing well!')
   }
 
-  else if(msg.content === '!msg Alderman Rd @ Gooch/Dillard (Southbound)') {
+  else if(msg.content === '!msg Alderman Rd @ Gooch/Dillard (Southbound)') { //Sends "Hi" to anyone with the role of Alderman Rd @ Gooch/Dillard (Southbound)
     msg.channel.send(`<@&${'831631689871523911'}> ${'Hi!'}`)
     //msg.channel.send("<@& " + 831631689871523911 + ">" + 'Hi!');
   }
 
-  else if(msg.content === '!clearRoles') {
+  else if(msg.content === '!clearRoles') { //clears all roles
     roles.clear();
   }
 
-  else if(msg.content === '!checkRole Alderman Rd @ Gooch/Dillard (Southbound)') {
-    if(msg.guild.roles.cache.find(r => r.name === 'Alderman Rd @ Gooch/Dillard (Southbound)')){
+  else if(msg.content === '!checkRole Alderman Rd @ Gooch/Dillard (Southbound)') { //checks to see if the role exists, if it was, will send "Role was found."
+    if(msg.guild.roles.cache.find(r => r.name === 'Alderman Rd @ Gooch/Dillard (Southbound)')){ //searchs for this role within the cache of roles
         msg.channel.send("Role was found.");
     }
   }
 
-  else if(msg.content === 'embedtest') {
-    const exampleEmbed = new Discord.MessageEmbed()
-      .setColor('#04446f')
-      .setTitle('Test of Embedded Messages')
-      .setAuthor("Arash's Bot")
-      .addFields(
+  else if(msg.content === 'embedtest') { //just test the embedded messages format
+    const exampleEmbed = new Discord.MessageEmbed() //creates new embedded message to be stylized
+      .setColor('#04446f') //sets color of the trim of the embedded message
+      .setTitle('Test of Embedded Messages') //sets title of embedded message
+      .setAuthor("Arash's Bot") //sets author of embedded message
+      .addFields( //these are the fields, creates in column format
         { name: 'Regular field title', value: 'Some value here' },
     	)
-      .setDescription('Here is a test of embedded messages')
-      .setTimestamp()
+      .setDescription('Here is a test of embedded messages') //description of embedded message
+      .setTimestamp() //sets timestamp of when it was sent
     msg.channel.send(exampleEmbed)
   }
 
-  else if(msg.content === '!help') {
+  else if(msg.content === '!help') { //lists all of the commands and their functions using embedded messaging
       var helpCMDS = ['!allbuses', '!buses', '!29Nstops', '!BUCK-Estops', '!BUCK-Nstops', '!LOVEstops', '!BLUEstops', '!REDstops', '!CROZ-Lstops', '!SLVstops', '!GRNstops', '!GLstops', '!ORstops', '!RDXstops'];
       var helpDescriptions = ['Lists all bus routes available at UVA',
                               'Lists active and inactive bus routes',
@@ -87,12 +87,12 @@ async function onMessage(msg) {
     msg.channel.send(exampleEmbed)
   }
 
-  else if(msg.content === '!allbuses') {
+  else if(msg.content === '!allbuses') { //used to list all buses and their long and short names for routes
     fetch("https://api.devhub.virginia.edu/v1/transit/routes/").then(r => r.json()).then(data => {
       var routesLength = data.routes.length;
       var longarr = []
       var shortarr = []
-      for (var i = 0; i < routesLength; i++) {
+      for (var i = 0; i < routesLength; i++) { //iterates through list of routes and appends long and short names to respective arrays to be printed
       	longarr.push(data.routes[i].long_name);
         shortarr.push(data.routes[i].short_name);
       }
@@ -112,20 +112,20 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!buses') {
+  else if(msg.content === '!buses') { //lists all active and inactive routes of buses
     fetch("https://api.devhub.virginia.edu/v1/transit/routes/").then(r => r.json()).then(data => {
       var routesLength = data.routes.length;
       var longActiveArr = [];
       var longInactiveArr = [];
       var shortActiveArr = [];
       var shortInactiveArr = [];
-      for (var i = 0; i < routesLength; i++) {
+      for (var i = 0; i < routesLength; i++) { //iterates through routes and adds routes with field of is_active equal to true
         if (data.routes[i].is_active === true) {
       		longActiveArr.push(data.routes[i].long_name);
           shortActiveArr.push(data.routes[i].short_name);
         }
        }
-      for (var i = 0; i < routesLength; i++) {
+      for (var i = 0; i < routesLength; i++) { //iterates through routes and adds routes with field of is_active equal to false
        if (data.routes[i].is_active === false) {
       		longInactiveArr.push(data.routes[i].long_name);
           shortInactiveArr.push(data.routes[i].short_name);
@@ -150,7 +150,7 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === 'movingbuses!') {
+  else if(msg.content === 'movingbuses!') { //attempted to find which buses were on the move but API was too inaccurate to prove useful
     fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
       var arr = [];
       for (const vehicle in data["vehicles"]) {
@@ -171,14 +171,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!29Nstops') {
+  else if(msg.content === '!29Nstops') { //lists all of bus stop locations for 29 North
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[0].stops.length; i++) {
+      for (let i = 0; i < data.routes[0].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[0].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -201,14 +201,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!BUCK-Estops') {
+  else if(msg.content === '!BUCK-Estops') { //lists all of bus stop locations for Buckingham East
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[1].stops.length; i++) {
+      for (let i = 0; i < data.routes[1].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[1].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -231,14 +231,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!BUCK-Nstops') {
+  else if(msg.content === '!BUCK-Nstops') { //lists all of bus stop locations for Buckingham North
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[2].stops.length; i++) {
+      for (let i = 0; i < data.routes[2].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[2].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -261,14 +261,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!LOVEstops') {
+  else if(msg.content === '!LOVEstops') { //lists all of bus stop locations for Lovingston
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[3].stops.length; i++) {
+      for (let i = 0; i < data.routes[3].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[3].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -291,14 +291,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!BLUEstops') {
+  else if(msg.content === '!BLUEstops') { //lists all of bus stop locations for Blueline
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[4].stops.length; i++) {
+      for (let i = 0; i < data.routes[4].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[4].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -321,14 +321,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!REDstops') {
+  else if(msg.content === '!REDstops') { //lists all of bus stop locations for Redline
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[5].stops.length; i++) {
+      for (let i = 0; i < data.routes[5].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[5].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -351,14 +351,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!CROZ-Lstops') {
+  else if(msg.content === '!CROZ-Lstops') {//lists all of bus stop locations for Crozet
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[6].stops.length; i++) {
+      for (let i = 0; i < data.routes[6].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[6].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -381,14 +381,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!SLVstops') {
+  else if(msg.content === '!SLVstops') { //lists all of bus stop locations for Silver Line
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[7].stops.length; i++) {
+      for (let i = 0; i < data.routes[7].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[7].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -411,14 +411,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!GRNstops') {
+  else if(msg.content === '!GRNstops') { //lists all of bus stop locations for Green Line
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[8].stops.length; i++) {
+      for (let i = 0; i < data.routes[8].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[8].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -441,14 +441,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!GLstops') {
+  else if(msg.content === '!GLstops') { //lists all of bus stop locations for Gold line
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[9].stops.length; i++) {
+      for (let i = 0; i < data.routes[9].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[9].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -471,14 +471,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!ORstops') {
+  else if(msg.content === '!ORstops') { //lists all of bus stop locations for Orange Line
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[10].stops.length; i++) {
+      for (let i = 0; i < data.routes[10].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[10].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -501,14 +501,14 @@ async function onMessage(msg) {
       r => msg.channel.send('Cannot access weather'))
   }
 
-  else if(msg.content === '!RDXstops') {
+  else if(msg.content === '!RDXstops') { //lists all of bus stop locations for Redline Express
     fetch("https://api.devhub.virginia.edu/v1/transit/bus-stops").then(r => r.json()).then(data => {
       var idArr = [];
       var stopArr = [];
-      for (let i = 0; i < data.routes[11].stops.length; i++) {
+      for (let i = 0; i < data.routes[11].stops.length; i++) { //iterates through stops and adds the ids to the array
         idArr.push(data.routes[11].stops[i])
       }
-      for (let i = 0; i < idArr.length; i++) {
+      for (let i = 0; i < idArr.length; i++) { //iterates through stops and if id matches with id of stops, location added to stop array
         for (let j = 0; j < data.stops.length; j++) {
           if (idArr[i] === data.stops[j].id) {
             stopArr.push(data.stops[j].name);
@@ -553,7 +553,7 @@ function onInterval(Client) {
         time += 5;
         console.log('Executed interval.');
 
-        fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
+        fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => { //constantly checks current stop field to see if it fits the ID of the selected route
           let userStop = 4235134;
           for (const dataField in data["vehicles"]) {
             //console.log(data["vehicles"][dataField]["call_name"])
@@ -565,7 +565,7 @@ function onInterval(Client) {
           r => Bot.sendMessage('Cannot access Bus Information'))
         //Bot.sendMessage("First");
 
-        fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => {
+        fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json()).then(data => { //constantly checks next stop field to see if it fits the ID of the selected route
           let userStop = 4235134;
           for (const dataField in data["vehicles"]) {
             //console.log(data["vehicles"][dataField]["id"])

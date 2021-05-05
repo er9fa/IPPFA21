@@ -12,7 +12,7 @@ var Handlers = {
     Bot1: require('./won/won.js'),
     Bot2: require('./Serhii/serhii.js'),
     Bot3: require('./hongze/hongze.js'),
-    Bot4: require('./arash/arash.js')
+    Bot4: require('./arash/arash.js'),
 };
 
 // Distribute messages to the appropriate handlers
@@ -21,4 +21,4 @@ MasterBot.on('message', msg => {
 });
 
 // Activate intervals on all handlers
-Object.keys(Handlers).map({ Interval } => setInterval(Interval(MasterBot), 5000));
+Object.keys(Handlers).map((k => setInterval(Handlers[k].Interval(MasterBot), 5000)));

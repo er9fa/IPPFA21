@@ -9,10 +9,10 @@ async function MasterLogin() {
 
 // Example handler shows
 var Handlers = {
-    Bot1: require('./won/won.js'),
-    Bot2: require('./Serhii/serhii.js'),
-    Bot3: require('./hongze/hongze.js'),
-    Bot4: require('./arash/arash.js'),
+    '812110810670170142': require('./won/won.js'),
+    '812110847194693693': require('./Serhii/serhii.js'),
+    '812110768602480680': require('./hongze/hongze.js'),
+    '812110829285015642': require('./arash/arash.js'),
 };
 
 // Distribute messages to the appropriate handlers

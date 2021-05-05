@@ -83,7 +83,7 @@ async function onMessage(msg) {
   }
   else if(msg.content.startsWith("!await")){
     const request = msg.content.split(" ");
-    const awaitEmbed = await awaitRequest(request);
+    const awaitEmbed = await awaitRequest(request, msg);
     msg.channel.send(awaitEmbed);
   }
 
@@ -166,13 +166,14 @@ async function onMessage(msg) {
     msg.channel.send(lookupEmbed);
   }
 
-  else if(msg.content.toLowerCase().startsWith("!addstop")){
+  else if(msg.content.toLowerCase().startsWith("!save")){
     const request = msg.content.split(" ");
     const embed = new Discord.MessageEmbed().setTitle("Bus Stop Role Assignment");
-    if(request.length===1 || parseInt(request[1])===NaN)
-      embed.setDescription("Please enter a valid stop ID.");
-    else{
+    if(request.length===1)
+      embed.setDescription("Please enter a valid stop ID or name.");
+    else if(!isNaN(parseInt(request[1]))){
       const id = parseInt(request[1]);
+      console.log(id)
       if(!stopNames.has(id))
         embed.setDescription("Invalid stop ID; use !lookup to find your stop");
       else{
@@ -182,14 +183,25 @@ async function onMessage(msg) {
         embed.setDescription("Saved Stop: "+stopNames.get(id));
       }
     }
+    else{
+      const name = request.slice(1).join(" ");
+      if(!stopID.has(name))
+        embed.setDescription("Invalid stop name; use !lookup to find your stop");
+      else{
+        let role = msg.guild.roles.cache.find(role => role.name === name);
+        let member = msg.member;
+        member.roles.add(role).catch(console.error);
+        embed.setDescription("Saved Stop: "+name);
+      }
+    }
     msg.channel.send(embed);
   }
-  else if(msg.content.toLowerCase().startsWith("!removestop")){
+  else if(msg.content.toLowerCase().startsWith("!remove")){
     const request = msg.content.split(" ");
     const embed = new Discord.MessageEmbed().setTitle("Bus Stop Role Assignment");
-    if(request.length===1 || parseInt(request[1])===NaN)
-      embed.setDescription("Please enter a valid stop ID.");
-    else{
+    if(request.length===1)
+      embed.setDescription("Please enter a valid stop ID or name.");
+    else if(!isNaN(parseInt(request[1]))){
       const id = parseInt(request[1]);
       if(!stopNames.has(id))
         embed.setDescription("Invalid stop ID; use !lookup to find your stop");
@@ -201,6 +213,21 @@ async function onMessage(msg) {
         else{
           member.roles.remove(role).catch(console.error);
           embed.setDescription("Removed Stop: "+stopNames.get(id));
+        }
+      }
+    }
+    else{
+      const name = (request[1]);
+      if(!stopID.has(id))
+        embed.setDescription("Invalid stop name; use !lookup to find your stop");
+      else{
+        let role = msg.guild.roles.cache.find(role => role.name === name);
+        let member = msg.member;
+        if(!member.roles.cache.has(role.id))
+          embed.setDescription("You do not have this stop saved!");
+        else{
+          member.roles.remove(role).catch(console.error);
+          embed.setDescription("Removed Stop: "+name);
         }
       }
     }
@@ -220,7 +247,7 @@ async function onMessage(msg) {
   }
 
   else if(msg.content.toLowerCase()==="!help"){
-    var helpCMDS = ['!refresh','!await','!status','!clearAll','!lookup', '!addStop', '!removeStop'];
+    var helpCMDS = ['!refresh','!await','!status','!clearAll','!lookup', '!save', '!remove'];
     var helpDescriptions = ['Immediately refreshes bus data',
                             'Creates an await request at a given bus stop',// (and route(s))',
                             'Shows created await requests',
@@ -244,30 +271,50 @@ async function onMessage(msg) {
   }
 }
 
-async function awaitRequest(request){
+async function awaitRequest(request, msg){
   const awaitEmbed = new Discord.MessageEmbed().setTitle('New Await Request');
   if(request.length===1)
     awaitEmbed.setDescription("Not enough arguments. Please specify bus stop id, optionally followed by bus routes");
   else{
-    if(!stopNames.has(parseInt(request[1])))
-      awaitEmbed.setDescription("Invalid bus stop ID; please try again");
+    if(!isNaN(parseInt(request[1]))){
+      const id = parseInt(request[1]);
+    }
+    else if(request[1]==="saved"){
+      awaitEmbed.setDescription("Now awaiting all saved buses");
+      const roles = msg.member.roles.cache.map(r => `${r}`).filter(r=>stopID.has(r));
+      for(role of roles){
+        let new_req ="!await "+role;
+        for(let i=2; i<request.length; i++)
+          new_req += " "+request[i];
+        msg.channel.send(await awaitRequest(new_req, msg));
+      }
+      return awaitEmbed;
+    }
+    else{
+      const s_ind = request.findIndex(r=>routeID.has(r));
+      const s = request.slice(1,s_ind).join(" ");
+      request = request.slice(0,1).concat([s], request.slice(s_ind));
+      const id = stopID.get(request[1]);
+      console.log(id);
+    }
+    if(id===undefined || !stopNames.has(id))
+      awaitEmbed.setDescription("Invalid bus stop entered; please try again");
       //msg.channel.send("Invalid bus stop ID; please try again");
     else if(request.length===2){ //no route parameters
       //let s="";
-      if(waiting.has(parseInt(request[1])))
-        awaitEmbed.setDescription("Overwriting previous await request at"+stopNames.get(parseInt(request[1]))+'\n');
+      if(waiting.has(id))
+        awaitEmbed.setDescription("Overwriting previous await request at"+stopNames.get(id)+'\n');
       else
         awaitEmbed.setDescription("New await request created!");
-      waiting.set(parseInt(request[1]), null);
-      arriving.set(parseInt(request[1]), new Set());
-      arrived.set(parseInt(request[1]), new Set());
+      waiting.set(id, null);
+      arriving.set(id, new Set());
+      arrived.set(id, new Set());
       //msg.channel.send(s+`Now awaiting: ${stopNames.get(parseInt(request[1]))}\nRoutes: all`);
       awaitEmbed.addFields(
-        { name: 'Stop', value: stopNames.get(parseInt(request[1])), inline: true },
+        { name: 'Stop', value: stopNames.get(id), inline: true },
         { name: 'Routes', value: "All", inline: true },
       )
       updateBuses();
-
     }
     else{ //route parameters
       let routes = [];
@@ -283,19 +330,19 @@ async function awaitRequest(request){
       if(routes.length===0)
         awaitEmbed.setDescription("Invalid bus route(s) specified; please try again"); //nothing is set
       else{
-        if(waiting.has(parseInt(request[1])))
-          awaitEmbed.setDescription("Overwriting previous await request at"+stopNames.get(parseInt(request[1]))+'\n');
+        if(waiting.has(id))
+          awaitEmbed.setDescription("Overwriting previous await request at"+stopNames.get(id)+'\n');
         else
           awaitEmbed.setDescription("New await request created!");
-        waiting.set(parseInt(request[1]), routes);
-        arriving.set(parseInt(request[1]), new Set());
-        arrived.set(parseInt(request[1]), new Set());
+        waiting.set(id, routes);
+        arriving.set(id, new Set());
+        arrived.set(id, new Set());
         //s += `Now awaiting: ${stopNames.get(parseInt(request[1]))}\nRoutes: ${routes.map(x=>routeNames.get(x))}`;
         let rn = routes.map(x=>routeNames.get(x));
         //let s = "";
         //rn.forEach(element=>s += element+"\n")
         awaitEmbed.addFields(
-          { name: 'Stop', value: stopNames.get(parseInt(request[1])), inline: true },
+          { name: 'Stop', value: stopNames.get(id), inline: true },
           { name: 'Routes', value: rn, inline: true },
         )
         if(invalid.length>0){

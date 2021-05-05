@@ -53,19 +53,37 @@ async function onMessage(msg) {
       ' fishing and listening to new music. Nice to meet you, I hope you are keeping' +
       ' well during the pandemic!');
 
-    else if(msg.content === 'Tell me weather of Charlottesville'){
+    else if(msg.content === '!weather'){
       fetch('http://api.openweathermap.org/data/2.5/weather?q=Charlottesville,US&appid=053f96ec8527cdb8c811437a5dd2922e')
       .then(response => response.json()).then(weatherData => {
         msg.channel.send(weatherData.main.temp)},
         response => msg.channel.send('Error.'))
       }
 
-    else if(msg.content === 'Give me a stop'){
+    else if(msg.content.toLowerCase() === '!randomStop'){
       fetch('https://api.devhub.virginia.edu/v1/transit/bus-stops')
       .then(response => response.json()).then(stop => {
         let randomValue = stop.stops[Math.floor(Math.random() * stop.stops.length)];
         msg.channel.send(randomValue.name)},
         response => msg.channel.send('Error'))
+    }
+
+    else if(msg.content.toLowerCase() === '!help'){
+      var commandHelp = ['!earlybusses', '!ontimebusses', 'latebusses']
+      var commandDescriptions = ['List of all early busses', ' List of all on time busses', 'List of all late busses']
+      const helpEmbed = new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Command Help')
+        .setAuthor('BusBot', 'https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
+        .setDescription('List of all commands and their functions')
+        .setThumbnail('https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
+        .addFields(
+          { name: 'Command name', value: commandHelp, inline: true },
+          { name: 'Function', value: commandDescriptions, inline: true}
+        )
+        .setFooter('Use !help command any time you want to see a list of all commands and their functions.')
+        .setTimestamp()
+      msg.channel.send(helpEmbed)
     }
 
     else if(msg.content.toLowerCase() === '!earlybusses'){
@@ -85,11 +103,13 @@ async function onMessage(msg) {
           const exampleEmbed = new Discord.MessageEmbed()
           .setColor('#0099ff')
           .setTitle('Early Busses')
-          .setAuthor('Won Bot')
+          .setAuthor('BusBot', 'https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
           .setDescription('List of all early busses currently running at UVA')
+          .setThumbnail('https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
           .addFields(
              { name: 'Early bus list', value: earlyArr, inline: true },
           )
+          .setFooter('Use !earlybusses command any time you want to see early busses.')
           .setTimestamp()
           msg.channel.send(exampleEmbed)}},
       response => msg.channel.send('Error'))
@@ -111,11 +131,13 @@ async function onMessage(msg) {
           const exampleEmbed = new Discord.MessageEmbed()
           .setColor('#0099ff')
           .setTitle('On Time Busses')
-          .setAuthor('Won Bot')
+          .setAuthor('BusBot', 'https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
           .setDescription('List of all on time busses currently running at UVA')
+          .setThumbnail('https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
           .addFields(
              { name: 'On time bus list', value: onTimeArr, inline: true },
           )
+          .setFooter('Use !ontimebusses command any time you want to see on time busses.')
           .setTimestamp()
           msg.channel.send(exampleEmbed)}},
       response => msg.channel.send('Error'))
@@ -137,15 +159,55 @@ async function onMessage(msg) {
           const exampleEmbed = new Discord.MessageEmbed()
           .setColor('#0099ff')
           .setTitle('Late Busses')
-          .setAuthor('Won Bot')
+          .setAuthor('BusBot', 'https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
           .setDescription('List of all late busses currently running at UVA')
+          .setThumbnail('https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
           .addFields(
              { name: 'Late bus list', value: lateArr, inline: true },
           )
+          .setFooter('Use !latebusses command any time you want to see late busses.')
           .setTimestamp()
           msg.channel.send(exampleEmbed)}},
       response => msg.channel.send('Error'))
     }
+
+    else if(msg.content.startsWith('!assignRole')){
+     let roleName = msg.content;
+     roleName = roleName.slice(roleName.indexOf(" ") + 1);
+     console.log(roleName);
+     let role = msg.guild.roles.cache.find(r => r.name === roleName);
+     let member = msg.member;
+     member.roles.add(role).catch(console.error);
+
+      const roleEmbed = new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('You have assigned yourself the following role')
+        .setAuthor('BusBot', 'https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
+        .setDescription(roleName)
+        .setThumbnail('https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
+        .setTimestamp()
+        .setFooter('Use !assignRole command to assign yourself a role.')
+      msg.channel.send(roleEmbed);
+          }
+
+    else if(msg.content.startsWith('!removeRole')){
+      let roleName = msg.content;
+      roleName = roleName.slice(roleName.indexOf(" ") + 1);
+      console.log(roleName);
+      let role = msg.guild.roles.cache.find(r => r.name === roleName);
+      let member = msg.member;
+      member.roles.remove(role).catch(console.error);
+
+      const roleEmbed = new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('You have removed yourself from the following role')
+        .setAuthor('BusBot', 'https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
+        .setDescription(roleName)
+        .setThumbnail('https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
+        .setTimestamp()
+        .setFooter('Use !removeRole command to remove yourself from a role.')
+    msg.channel.send(roleEmbed);
+                }
 
 }
 

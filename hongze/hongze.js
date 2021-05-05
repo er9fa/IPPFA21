@@ -20,16 +20,16 @@ var arrived = new Map();
 Bot.sendMessage = (content, channel) => (Bot.channels.cache.get(channel ?? CHANNEL) ?? {send: () => null}).send(content);
 
 async function BotLogin(token, name, channel) {
-    if(token) TOKEN = token;
-    if(name) NAME= name;
-    if(channel) CHANNEL = channel;
-    await Bot.login(TOKEN);
-    console.log(`[DISC] Logged in as ${NAME}`);
-    await refresh();
+  if(token) TOKEN = token;
+  if(name) NAME= name;
+  if(channel) CHANNEL = channel;
+  await Bot.login(TOKEN);
+  console.log(`[DISC] Logged in as ${NAME}`);
+  await refresh();
 }
 
 Bot.on('error', err => {
-    console.log(`[DISC] !! Error in bot ${NAME}:\n{err}`);
+  console.log(`[DISC] !! Error in bot ${NAME}:\n{err}`);
 });
 
 async function refresh(){
@@ -58,39 +58,24 @@ async function refresh(){
 
 // Dictates bot behavior when it sees a message being sent.
 async function onMessage(msg) {
-  /*
-  if(msg.content.toUpperCase() === 'PING')
-    msg.channel.send('Pong');
-  else if(msg.content.toLowerCase() === 'hi')
-    msg.channel.send('Hi DEVHUB! How is everyone?');
-  else if(msg.content.toLowerCase().startsWith('tell me about yourself'))
-    msg.channel.send("My name is Hongze Chen, and I\'m a second-year majoring in mathematics and minoring in CS. "+
-    "Like most people I\'m slowly going insane during the pandemic, but I generally enjoy assembling and fixing things, "+
-    "the internet, traveling, etc. I am easygoing, but also extremely meticulous and perfectionistic, especially when it "+
-    "comes to working with software. I hope to be a helpful and dedicated teammate to everyone throughout this semester.");
-  else if(msg.content.toLowerCase().startsWith("what's the weather")){
-    //is there a way to conceal my API code?
-    fetch("http://api.openweathermap.org/data/2.5/weather?q=Charlottesville,US&units=imperial&appid=52520c6b8e3b1737918c28a63960625d").then(
-      r => r.json()).then(data => {
-        const s = `Right now the weather in Charlottesville is ${data.weather[0].main.toLowerCase()}, and the temperature is ${data.main.temp}°F.`;
-        msg.channel.send(s);
-      }, r => msg.channel.send('Whoops! Something went wrong during the API fetch. Try again later'))
-  }*/
+
   if(msg.content==="!refresh"){
     await refresh();
     msg.channel.send("Refreshed!");
-    updateBuses();
+    //updateBuses();
+    updateBusesGeo();
   }
   else if(msg.content.startsWith("!await")){
-    const request = msg.content.split(" ");
-    const awaitEmbed = await awaitRequest(request, msg);
+    //const request = msg.content.split(" ");
+    const awaitEmbed = await awaitRequest(msg.content, msg);
+    if(awaitEmbed!=null)
     msg.channel.send(awaitEmbed);
   }
 
   else if(msg.content==="!status"){
     const statusEmbed = new Discord.MessageEmbed().setTitle("Awaited Buses");
     if(waiting.size===0)
-      msg.channel.send(statusEmbed.setDescription("You are not currently waiting for any buses."));
+    msg.channel.send(statusEmbed.setDescription("You are not currently waiting for any buses."));
     else{
       statusEmbed.setDescription("Currently waiting for buses at:");
       let s="";
@@ -107,40 +92,53 @@ async function onMessage(msg) {
       msg.channel.send(statusEmbed);
     }
   }
-  else if(msg.content.toLowerCase()==="!clearall"){
-    waiting.clear();
-    arriving.clear();
-    arrived.clear();
-    msg.channel.send(new Discord.MessageEmbed().setTitle('Cleared Awaits').setDescription("All await requests cleared!"));
-  }
-  /*
+
   else if(msg.content.startsWith("!clear")){
     const request = msg.content.split(" ");
     const clearEmbed = new Discord.MessageEmbed().setTitle('Cleared Awaits');
     if(request.length===1){
-      clearEmbed.setDescription("Please specify one or more await requests to clear.")
+      clearEmbed.setDescription("Please specify one or more await requests to clear, or use \"all\" to clear all.")
+    }
+    else if(request[1]==="all"){
+      waiting.clear();
+      arriving.clear();
+      arrived.clear();
+      clearEmbed.setDescription("All await requests cleared!");
     }
     else{
-      let cleared=false;
-      let s="";
-      let t="";
-      for(let i=1; i<request.length; i++){
-        const n = parseInt(request[i]);
-        if(n===NaN || n>=waiting.length)
-          continue;
-
-
+      let id="";
+      if(!isNaN(parseInt(request[1]))){
+        id = parseInt(request[1]);
+        if(!stopNames.has(id))
+        clearEmbed.setDescription("Invalid stop ID; use !lookup to find your stop");
       }
+      else{
+        const name = request.slice(1).join(" ");
+        if(!stopID.has(name))
+        clearEmbed.setDescription("Invalid stop name; use !lookup to find your stop");
+        else
+        id = stopID.get(name);
+      }
+      if(id!=="" && waiting.has(id)){
+        waiting.delete(id);
+        arriving.delete(id);
+        arrived.delete(id);
+        clearEmbed.setDescription("Await request cleared:\n"+stopNames.get(id));
+      }
+      else if(id!=="")
+      clearEmbed.setDescription("You are not currently awaiting this stop!")
     }
-*/
+    msg.channel.send(clearEmbed);
+  }
+
 
   else if(msg.content.startsWith("!lookup")){
     const request = msg.content.split(" ");
     const lookupEmbed = new Discord.MessageEmbed()
-      .setTitle('Bus Stop Lookup')
+    .setTitle('Bus Stop Lookup')
     let search = "";
     if(request.length>1)
-      search = request[1];
+    search = request[1];
     else {
       lookupEmbed.setDescription("Please add a search term.");
       msg.channel.send(lookupEmbed);
@@ -155,10 +153,10 @@ async function onMessage(msg) {
         t+=stopID.get(key)+"\n";
       }
     }
-    console.log(s);
+    //console.log(s);
     if(s!=""){
       lookupEmbed.addFields({ name: 'Stop Name', value: s, inline:true},
-                            { name: 'ID', value: t, inline:true});
+      { name: 'ID', value: t, inline:true});
     }
     else{
       lookupEmbed.setDescription("No bus stops found. Try changing your search term");
@@ -166,16 +164,15 @@ async function onMessage(msg) {
     msg.channel.send(lookupEmbed);
   }
 
-  else if(msg.content.toLowerCase().startsWith("!save")){
+  else if(msg.content.toLowerCase().startsWith("!addrole")){
     const request = msg.content.split(" ");
     const embed = new Discord.MessageEmbed().setTitle("Bus Stop Role Assignment");
     if(request.length===1)
-      embed.setDescription("Please enter a valid stop ID or name.");
+    embed.setDescription("Please enter a valid stop ID or name.");
     else if(!isNaN(parseInt(request[1]))){
       const id = parseInt(request[1]);
-      console.log(id)
       if(!stopNames.has(id))
-        embed.setDescription("Invalid stop ID; use !lookup to find your stop");
+      embed.setDescription("Invalid stop ID; use !lookup to find your stop");
       else{
         let role = msg.guild.roles.cache.find(role => role.name === stopNames.get(id));
         let member = msg.member;
@@ -186,7 +183,7 @@ async function onMessage(msg) {
     else{
       const name = request.slice(1).join(" ");
       if(!stopID.has(name))
-        embed.setDescription("Invalid stop name; use !lookup to find your stop");
+      embed.setDescription("Invalid stop name; use !lookup to find your stop");
       else{
         let role = msg.guild.roles.cache.find(role => role.name === name);
         let member = msg.member;
@@ -196,20 +193,21 @@ async function onMessage(msg) {
     }
     msg.channel.send(embed);
   }
-  else if(msg.content.toLowerCase().startsWith("!remove")){
+
+  else if(msg.content.toLowerCase().startsWith("!deleterole")){
     const request = msg.content.split(" ");
     const embed = new Discord.MessageEmbed().setTitle("Bus Stop Role Assignment");
     if(request.length===1)
-      embed.setDescription("Please enter a valid stop ID or name.");
+    embed.setDescription("Please enter a valid stop ID or name.");
     else if(!isNaN(parseInt(request[1]))){
       const id = parseInt(request[1]);
       if(!stopNames.has(id))
-        embed.setDescription("Invalid stop ID; use !lookup to find your stop");
+      embed.setDescription("Invalid stop ID; use !lookup to find your stop");
       else{
         let role = msg.guild.roles.cache.find(role => role.name === stopNames.get(id));
         let member = msg.member;
         if(!member.roles.cache.has(role.id))
-          embed.setDescription("You do not have this stop saved!");
+        embed.setDescription("You do not have this stop saved!");
         else{
           member.roles.remove(role).catch(console.error);
           embed.setDescription("Removed Stop: "+stopNames.get(id));
@@ -217,14 +215,28 @@ async function onMessage(msg) {
       }
     }
     else{
-      const name = (request[1]);
-      if(!stopID.has(id))
-        embed.setDescription("Invalid stop name; use !lookup to find your stop");
+      const name = request.slice(1).join(" ");
+      if(name==="all"){
+        let s = "All stops removed:\n";
+        let roles = msg.member.roles.cache.map(r=>r.name).filter(r=>stopID.has(r));
+        //console.log(roles)
+        for(const name of roles){
+          let r = msg.guild.roles.cache.find(role => role.name === name)
+          msg.member.roles.remove(r).catch(console.error)
+          s+=name + "\n";
+        }
+        console.log(s);
+        if(s==="All stops removed:\n")
+        s="You do not have any stops saved!"
+        embed.setDescription(s)
+      }
+      else if(!stopID.has(name))
+      embed.setDescription("Invalid stop name; use !lookup to find your stop");
       else{
         let role = msg.guild.roles.cache.find(role => role.name === name);
         let member = msg.member;
         if(!member.roles.cache.has(role.id))
-          embed.setDescription("You do not have this stop saved!");
+        embed.setDescription("You do not have this stop saved!");
         else{
           member.roles.remove(role).catch(console.error);
           embed.setDescription("Removed Stop: "+name);
@@ -234,28 +246,16 @@ async function onMessage(msg) {
     msg.channel.send(embed);
   }
 
-  else if(msg.content === "!printStatus"){
-    console.log(arriving);
-    console.log(arrived);
-  }
-  else if(msg.content.startsWith("!test")){
-    const request = msg.content.split(" ");
-    let route = routeID.get(request[2]);
-    const s = generateEmbed(parseInt(request[1]), route);
-    console.log(request);
-    msg.channel.send(s);
-  }
-
   else if(msg.content.toLowerCase()==="!help"){
-    var helpCMDS = ['!refresh','!await','!status','!clearAll','!lookup', '!save', '!remove'];
+    var helpCMDS = ['!refresh','!await','!status','!clear','!lookup','!addRole', '!deleteRole'];
     var helpDescriptions = ['Immediately refreshes bus data',
-                            'Creates an await request at a given bus stop',// (and route(s))',
-                            'Shows created await requests',
-                            'Deletes all active await requests',
-                            'Looks up bus stop IDs by name/search term',
-                            'Adds a role corresponding to a bus stop',
-                            'Removes a role']
-  const helpEmbed = new Discord.MessageEmbed()
+    'Creates an await request at a given bus stop',// (and route(s))',
+    'Shows created await requests',
+    'Deletes active await request(s)',
+    'Looks up bus stop IDs by name/search term',
+    'Adds a role corresponding to a bus stop',
+    'Removes a role']
+    const helpEmbed = new Discord.MessageEmbed()
     .setColor("LUMINOUS_VIVID_PINK")
     .setAuthor('BusBot', 'attachment://Bus.jpg', 'https://uva.transloc.com/')
     .setTitle('Commands List')
@@ -267,45 +267,60 @@ async function onMessage(msg) {
     )
     .setTimestamp()
     .setFooter("Use !help command anytime to view all commands.")
-  msg.channel.send(helpEmbed)
+    msg.channel.send(helpEmbed)
   }
 }
 
-async function awaitRequest(request, msg){
-  const awaitEmbed = new Discord.MessageEmbed().setTitle('New Await Request');
-  if(request.length===1)
+async function awaitRequest(content, msg){
+  request = content.split(" ");
+  let awaitEmbed = new Discord.MessageEmbed().setTitle('New Await Request').setColor('BLURPLE');
+  let id="";
+  if(request.length===1){
     awaitEmbed.setDescription("Not enough arguments. Please specify bus stop id, optionally followed by bus routes");
+    return awaitEmbed;
+  }
   else{
     if(!isNaN(parseInt(request[1]))){
-      const id = parseInt(request[1]);
+      id = parseInt(request[1]);
+      console.log(id);
     }
-    else if(request[1]==="saved"){
-      awaitEmbed.setDescription("Now awaiting all saved buses");
-      const roles = msg.member.roles.cache.map(r => `${r}`).filter(r=>stopID.has(r));
+    else if(request[1]==="all"){
+      //awaitEmbed.setDescription("Now awaiting all saved buses.");
+      awaitEmbed = null;
+      const roles = msg.member.roles.cache.map(r => r.name).filter(r=>stopID.has(r)).map(r=>stopID.get(r));
       for(role of roles){
         let new_req ="!await "+role;
         for(let i=2; i<request.length; i++)
-          new_req += " "+request[i];
+        new_req += " "+request[i];
+        console.log(new_req)
         msg.channel.send(await awaitRequest(new_req, msg));
       }
       return awaitEmbed;
     }
+    else if(!content.includes("[") || !content.includes("]")){
+      awaitEmbed.setDescription("To await using stop names, surround the stop name with brackets [].");
+      return awaitEmbed;
+    }
     else{
-      const s_ind = request.findIndex(r=>routeID.has(r));
-      const s = request.slice(1,s_ind).join(" ");
-      request = request.slice(0,1).concat([s], request.slice(s_ind));
-      const id = stopID.get(request[1]);
-      console.log(id);
+      const left_ind = content.indexOf("[");
+      const right_ind = content.indexOf(']');
+      const s = content.substring(left_ind+1,right_ind).trim();
+      const after = content.substring(right_ind+1).trim();
+      if(after.length===0)
+      request = request.slice(0,1).concat([s])
+      else
+      request = request.slice(0,1).concat([s], after.split(" "));
+      id = stopID.get(request[1]);
     }
     if(id===undefined || !stopNames.has(id))
-      awaitEmbed.setDescription("Invalid bus stop entered; please try again");
-      //msg.channel.send("Invalid bus stop ID; please try again");
+    awaitEmbed.setDescription("Invalid bus stop entered; please try again");
+    //msg.channel.send("Invalid bus stop ID; please try again");
     else if(request.length===2){ //no route parameters
       //let s="";
       if(waiting.has(id))
-        awaitEmbed.setDescription("Overwriting previous await request at"+stopNames.get(id)+'\n');
+      awaitEmbed.setDescription("Overwriting previous await request at "+stopNames.get(id)+'\n');
       else
-        awaitEmbed.setDescription("New await request created!");
+      awaitEmbed.setDescription("New await request created!");
       waiting.set(id, null);
       arriving.set(id, new Set());
       arrived.set(id, new Set());
@@ -314,26 +329,26 @@ async function awaitRequest(request, msg){
         { name: 'Stop', value: stopNames.get(id), inline: true },
         { name: 'Routes', value: "All", inline: true },
       )
-      updateBuses();
+      updateBusesGeo();
     }
     else{ //route parameters
       let routes = [];
       let invalid = [];
       for(let i=2; i<request.length; i++){
         if(!isNaN(request[i]) && routeNames.has(parseInt(request[i])))
-          routes.push(parseInt(request[i]));
+        routes.push(parseInt(request[i]));
         else if(routeID.has(request[i].toUpperCase()))
-          routes.push(routeID.get(request[i].toUpperCase()));
+        routes.push(routeID.get(request[i].toUpperCase()));
         else
-          invalid.push(request[i]);
+        invalid.push(request[i]);
       }
       if(routes.length===0)
-        awaitEmbed.setDescription("Invalid bus route(s) specified; please try again"); //nothing is set
+      awaitEmbed.setDescription("Invalid bus route(s) specified; please try again"); //nothing is set
       else{
         if(waiting.has(id))
-          awaitEmbed.setDescription("Overwriting previous await request at"+stopNames.get(id)+'\n');
+        awaitEmbed.setDescription("Overwriting previous await request at "+stopNames.get(id)+'\n');
         else
-          awaitEmbed.setDescription("New await request created!");
+        awaitEmbed.setDescription("New await request created!");
         waiting.set(id, routes);
         arriving.set(id, new Set());
         arrived.set(id, new Set());
@@ -354,20 +369,36 @@ async function awaitRequest(request, msg){
         for(const r of routes){
           const data = await fetch("https://api.devhub.virginia.edu/v1/transit/routes/"+r).then(r=>r.json());
           if(data.routes.is_active===false)
-            inactive.push(data.routes.short_name);
+          inactive.push(data.routes.short_name);
         }
         if(inactive.length>0){
           //let s="";
           //inactive.forEach(element=>s += element+"\n");
           awaitEmbed.addField('Warning: The following route(s) are currently inactive:', inactive);
         }
-        updateBuses();
+        updateBusesGeo();
       }
     }
   }
   return awaitEmbed;
 }
 
+function geoFencing(stop){
+  let new_buses = [];
+  const myStop = stopsData['stops'].filter(r=>r.id===stop)[0]
+  for (const property in busData["vehicles"].filter(r=>waiting.get(myStop).includes(r['route_id']))) {
+    let x = busData["vehicles"][property]["position"][0];
+    let y = busData["vehicles"][property]["position"][1];
+    let stopx = myStop["position"][0];
+    let stopy = myStop["position"][1];
+    if ((Math.abs(x-stopx)<=1) && (Math.abs(x-stopx)<=1)){
+      //This means the bus is there!
+      new_buses.push(busData["vehicles"][property]);
+    }
+    return new_buses;
+  }
+}
+/*
 function updateBuses(){
   for(const stop of waiting.keys()){
     const arriving_buses = busData.vehicles.filter(x=> x.next_stop===stop && (waiting.get(stop)===null ? true : waiting.get(stop).includes(x.route_id))).map(x=>[x.id, x.route_id]);
@@ -375,27 +406,41 @@ function updateBuses(){
     let new_buses = [];
     for(const bus of arriving_buses){
       if(!arriving.get(stop).has(bus[0]))
-        new_buses.push(bus[1]);
+      new_buses.push(bus[1]);
     }
     if(new_buses.length>0)
-      for(const bus_route of new_buses){
-        //Bot.sendMessage(`Alert: A ${routeNames.get(bus_route)} bus is one stop away from ${stopNames.get(stop)}!`,CHANNEL);
-        Bot.sendMessage(generateEmbed(bus_route, stop),CHANNEL);
-      }
+    for(const bus_route of new_buses){
+      Bot.sendMessage(generateEmbed(bus_route, stop),CHANNEL);
+    }
     new_buses = [];
     for(const bus of arrived_buses){
       if(!arrived.get(stop).has(bus[0]))
-        new_buses.push(bus[1]);
+      new_buses.push(bus[1]);
     }
     if(new_buses.length>0)
-      for(const bus_route of new_buses){
-        //Bot.sendMessage(`Alert: A ${routeNames.get(bus_route)} bus has arrived at ${stopNames.get(stop)}!`,CHANNEL);
-        Bot.sendMessage(generateEmbed(bus_route, stop),CHANNEL);
-      }
+    for(const bus_route of new_buses){
+      Bot.sendMessage(generateEmbed(bus_route, stop),CHANNEL);
+    }
     arriving.set(stop, new Set(arriving_buses.map(x=>x[0])))
     arrived.set(stop, new Set(arrived_buses.map(x=>x[0])))
   }
+}*/
 
+function updateBusesGeo(){
+  let arriving_buses=undefined;
+  for(const stop of waiting.keys()){
+    arriving_buses = geoFencing(stop);
+    let new_buses = [];
+    for(const bus of arriving_buses){
+      if(!arriving.get(stop).has(bus[0]))
+      new_buses.push(bus[1]);
+    }
+    if(new_buses.length>0)
+    for(const bus_route of new_buses)
+    Bot.sendMessage(generateEmbed(bus_route, stop),CHANNEL);
+
+    arriving.set(stop, new Set(arriving_buses.map(x=>x[0])))
+  }
 }
 
 function generateEmbed(stop_id, route_id){
@@ -430,19 +475,19 @@ function generateEmbed(stop_id, route_id){
   }
   const busEmbed = new Discord.MessageEmbed()
   .attachFiles(['./Bus.jpg', './Map.png'])
-	.setColor(color)
-	.setTitle('Bus Arrival')
-	.setAuthor('BusBot', 'attachment://Bus.jpg', 'https://uva.transloc.com/')
-	.setDescription('A bus is arriving at your stop!')
-	.setThumbnail('attachment://Bus.jpg')
-	.addFields(
-		{ name: 'Stop', value: stop_name, inline: true },
-		{ name: 'Route', value: name, inline: true },
+  .setColor(color)
+  .setTitle('Bus Arrival')
+  .setAuthor('BusBot', 'attachment://Bus.jpg', 'https://uva.transloc.com/')
+  .setDescription('A bus is arriving at your stop!')
+  .setThumbnail('attachment://Bus.jpg')
+  .addFields(
+    { name: 'Stop', value: stop_name, inline: true },
+    { name: 'Route', value: name, inline: true },
     //{ name: 'Bus Number', value: "???", inline: true},
-	)
-	.setImage("attachment://Map.png")
-	.setTimestamp()
-	.setFooter('Can\'t think of a better footer.', 'https://i.imgur.com/wSTFkRM.png');
+  )
+  //.setImage("attachment://Map.png")
+  .setTimestamp()
+  .setFooter('Use !help for a list of commands.', 'https://i.imgur.com/wSTFkRM.png');
   return busEmbed;
 }
 
@@ -450,29 +495,29 @@ function generateEmbed(stop_id, route_id){
 // Function executed every 5 seconds.
 var time = 0;
 function onInterval(Client) {
-    // There's some interesting syntax going on here but your code goes inside the inner curly braces.
-    return async () => {
-        time += 5;
-        console.log('Executed interval.');
-        busData = await fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json());
-        updateBuses();
-    }
+  // There's some interesting syntax going on here but your code goes inside the inner curly braces.
+  return async () => {
+    time += 5;
+    console.log('Executed interval.');
+    busData = await fetch("https://api.devhub.virginia.edu/v1/transit/vehicles").then(r => r.json());
+    updateBusesGeo();
+  }
 }
 
 // Requires Nodejs v14.6.0
 // Runs only if this file is the main process.
 if(require.main === module) {
-    BotLogin();
-    Bot.on('message', msg => {
-        // Ignore messages from other bots
-        // Ignore messages from other channels
-        if(msg.author.bot || msg.channel.id !== CHANNEL) return;
-        onMessage(msg);
-    });
-    setInterval(onInterval(Bot), 5000);
+  BotLogin();
+  Bot.on('message', msg => {
+    // Ignore messages from other bots
+    // Ignore messages from other channels
+    if(msg.author.bot || msg.channel.id !== CHANNEL) return;
+    onMessage(msg);
+  });
+  setInterval(onInterval(Bot), 5000);
 }
 
 module.exports = {
-    Bot: Bot,
-    Interval: onInterval,
+  Bot: Bot,
+  Interval: onInterval,
 }

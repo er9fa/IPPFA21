@@ -28,7 +28,8 @@ async function onMessage(msg) {
       const Discord = require('discord.js');
 
 // inside a command, event listener, etc.
-    const exampleEmbed = new Discord.MessageEmbed()
+    if(msg.content === '!embed'){
+      const exampleEmbed = new Discord.MessageEmbed()
 	     .setColor('#0099ff')
 	     .setTitle('Example Embed')
 	     .setAuthor('Won')
@@ -43,8 +44,8 @@ async function onMessage(msg) {
 	    .setTimestamp()
 	    .setFooter('Some footer text here', 'https://i.imgur.com/wSTFkRM.png');
 
-      if(msg.content === '!embed'){
-        msg.channel.send(exampleEmbed);
+
+    msg.channel.send(exampleEmbed);
       }
 
     else if(msg.content.toLowerCase() === ('tell me about yourself?'))
@@ -61,45 +62,45 @@ async function onMessage(msg) {
       }
 
     else if(msg.content.toLowerCase() === '!randomStop'){
-      fetch('https://api.devhub.virginia.edu/v1/transit/bus-stops')
+      fetch('https://api.devhub.virginia.edu/v1/transit/bus-stops') // gets data from api
       .then(response => response.json()).then(stop => {
-        let randomValue = stop.stops[Math.floor(Math.random() * stop.stops.length)];
-        msg.channel.send(randomValue.name)},
+        let randomValue = stop.stops[Math.floor(Math.random() * stop.stops.length)]; // gets a random number and grabs corresponding stop data with that number
+        msg.channel.send(randomValue.name)}, // sends the stop data to discord channel
         response => msg.channel.send('Error'))
     }
 
     else if(msg.content.toLowerCase() === '!help'){
-      var commandHelp = ['!earlybusses', '!ontimebusses', 'latebusses']
-      var commandDescriptions = ['List of all early busses', ' List of all on time busses', 'List of all late busses']
+      var commandHelp = ['!earlybusses', '!ontimebusses', 'latebusses'] // list of commands
+      var commandDescriptions = ['List of all early busses', ' List of all on time busses', 'List of all late busses'] // command description
       const helpEmbed = new Discord.MessageEmbed()
         .setColor('#0099ff')
-        .setTitle('Command Help')
-        .setAuthor('BusBot', 'https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
-        .setDescription('List of all commands and their functions')
-        .setThumbnail('https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
+        .setTitle('Command Help') // title of embed
+        .setAuthor('BusBot', 'https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg') // embed author and picture
+        .setDescription('List of all commands and their functions') // embed description
+        .setThumbnail('https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg') // embed thumbnail
         .addFields(
-          { name: 'Command name', value: commandHelp, inline: true },
-          { name: 'Function', value: commandDescriptions, inline: true}
+          { name: 'Command name', value: commandHelp, inline: true }, // displays name of commands
+          { name: 'Function', value: commandDescriptions, inline: true} // displays description of commands
         )
         .setFooter('Use !help command any time you want to see a list of all commands and their functions.')
         .setTimestamp()
-      msg.channel.send(helpEmbed)
+      msg.channel.send(helpEmbed) // sends embed to channel
     }
 
-    else if(msg.content.toLowerCase() === '!earlybusses'){
-      fetch('https://api.devhub.virginia.edu/v1/transit/vehicles')
+    else if(msg.content.toLowerCase() === '!earlybusses'){ // checks if message received is for the early busses
+      fetch('https://api.devhub.virginia.edu/v1/transit/vehicles') // grabs data from api
       .then(response => response.json()).then(data => {
-        var earlyArr = []
-        var vehicleLength = data.vehicles.length
+        var earlyArr = [] // empty array for early busses
+        var vehicleLength = data.vehicles.length // number of vehicles
         for (var i = 0; i < vehicleLength; i++){
-          if (data.vehicles[i].arrival_status === "Early"){
-            earlyArr.push(data.vehicles[i].call_name)
+          if (data.vehicles[i].arrival_status === "Early"){ // checks if arrival status is early for each vehicle
+            earlyArr.push(data.vehicles[i].call_name) // if early, adds the bus name into array
           }
         }
-        if (earlyArr.length < 1){
-          msg.channel.send('There are no early busses right now.')
+        if (earlyArr.length < 1){ // checks if array is empty, means there are no early busses
+          msg.channel.send('There are no early busses right now.') // send to channel
         }
-        else {
+        else { // if array is not empty, embeds the bus list and sends into channel
           const exampleEmbed = new Discord.MessageEmbed()
           .setColor('#0099ff')
           .setTitle('Early Busses')
@@ -115,19 +116,19 @@ async function onMessage(msg) {
       response => msg.channel.send('Error'))
     }
 
-    else if(msg.content.toLowerCase() === '!ontimebusses'){
-      fetch('https://api.devhub.virginia.edu/v1/transit/vehicles')
+    else if(msg.content.toLowerCase() === '!ontimebusses'){ // checks if message received is for on time busses
+      fetch('https://api.devhub.virginia.edu/v1/transit/vehicles') // grabs api data
       .then(response => response.json()).then(data => {
-        var onTimeArr = []
+        var onTimeArr = [] // empty array for on time busses
         for (const prop in data["vehicles"]){
-          if (data["vehicles"][prop]["arrival_status"] === "On-Time"){
-            onTimeArr.push(data["vehicles"][prop]["call_name"])
+          if (data["vehicles"][prop]["arrival_status"] === "On-Time"){ // checks if bus is on time or not
+            onTimeArr.push(data["vehicles"][prop]["call_name"]) // if on time, pushes bus name into array list
           }
         }
-        if (onTimeArr.length < 1){
-          msg.channel.send('There are no on time busses right now.')
+        if (onTimeArr.length < 1){ // checks if array is empty
+          msg.channel.send('There are no on time busses right now.') // sends to channel
         }
-        else {
+        else { // if there are on time busses, sends embed to discord channel
           const exampleEmbed = new Discord.MessageEmbed()
           .setColor('#0099ff')
           .setTitle('On Time Busses')
@@ -148,14 +149,14 @@ async function onMessage(msg) {
       .then(response => response.json()).then(data => {
         var lateArr = []
         for (const prop in data["vehicles"]){
-          if (data["vehicles"][prop]["arrival_status"] === "Late"){
-            lateArr.push(data["vehicles"][prop]["call_name"])
+          if (data["vehicles"][prop]["arrival_status"] === "Late"){ // checks if there are late busses
+            lateArr.push(data["vehicles"][prop]["call_name"]) // pushes late bus to array
           }
         }
-        if (lateArr.length < 1){
+        if (lateArr.length < 1){ // lets channel know if there are no late busses
           msg.channel.send('There are no late busses right now.')
         }
-        else {
+        else { // if there are late busses, sends embed to discord channel
           const exampleEmbed = new Discord.MessageEmbed()
           .setColor('#0099ff')
           .setTitle('Late Busses')
@@ -171,15 +172,15 @@ async function onMessage(msg) {
       response => msg.channel.send('Error'))
     }
 
-    else if(msg.content.startsWith('!assignRole')){
-     let roleName = msg.content;
-     roleName = roleName.slice(roleName.indexOf(" ") + 1);
+    else if(msg.content.startsWith('!assignRole')){ // checks if message starts with !assignRole
+     let roleName = msg.content; // role name is the entire message
+     roleName = roleName.slice(roleName.indexOf(" ") + 1); // slices mesage after the space so that name of role can be grabbed
      console.log(roleName);
-     let role = msg.guild.roles.cache.find(r => r.name === roleName);
-     let member = msg.member;
-     member.roles.add(role).catch(console.error);
+     let role = msg.guild.roles.cache.find(r => r.name === roleName); // finds the corresponding role for the name
+     let member = msg.member; // whoever sent the message will have their role changed
+     member.roles.add(role).catch(console.error); // adds the role for the member
 
-      const roleEmbed = new Discord.MessageEmbed()
+      const roleEmbed = new Discord.MessageEmbed() // sends embed notifying role addition
         .setColor('#0099ff')
         .setTitle('You have assigned yourself the following role')
         .setAuthor('BusBot', 'https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
@@ -191,14 +192,14 @@ async function onMessage(msg) {
           }
 
     else if(msg.content.startsWith('!removeRole')){
-      let roleName = msg.content;
-      roleName = roleName.slice(roleName.indexOf(" ") + 1);
+      let roleName = msg.content; // message is set as role name
+      roleName = roleName.slice(roleName.indexOf(" ") + 1); // role name is spliced at the space
       console.log(roleName);
-      let role = msg.guild.roles.cache.find(r => r.name === roleName);
-      let member = msg.member;
-      member.roles.remove(role).catch(console.error);
+      let role = msg.guild.roles.cache.find(r => r.name === roleName); // finds role corresonding to the name
+      let member = msg.member; // whoever sent the message is set as the member
+      member.roles.remove(role).catch(console.error); // role is removed from the member
 
-      const roleEmbed = new Discord.MessageEmbed()
+      const roleEmbed = new Discord.MessageEmbed() // embed notification of role removal
         .setColor('#0099ff')
         .setTitle('You have removed yourself from the following role')
         .setAuthor('BusBot', 'https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
@@ -207,7 +208,24 @@ async function onMessage(msg) {
         .setTimestamp()
         .setFooter('Use !removeRole command to remove yourself from a role.')
     msg.channel.send(roleEmbed);
-                }
+      }
+
+    else if(msg.content.toLowerCase() === '!gettingstarted'){
+      const startEmbed = new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Getting Started')
+        .setAuthor('BusBot', 'https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
+        .setDescription('Welcome to BusBot! With BusBot, you can get notifications about UVA buses without ever opening your phone.' +
+         ' In order to see a full list of commands and their functions, use the !help command.' +
+         ' Role names correspond with different bus stops. Set a role for yourself to get information about different buses' +
+         ' that pass through your selected stop.' + ' First, assign a role for yourself using the !assignRole command. Then '
+         + ' use the !trackRoute command to save the desired route that passes through the stop.')
+        .setThumbnail('https://parking.virginia.edu/sites/parking.virginia.edu/files/UTS_Bus_Rebrand_SS_05.jpg')
+        .setFooter('Use !help to get a full list of commands and their descriptions.')
+        .setTimestamp();
+      msg.channel.send(startEmbed);
+    }
+
 
 }
 
@@ -225,7 +243,7 @@ function onInterval(Client) {
         async function getMyStop() {
          fetch('https://api.devhub.virginia.edu/v1/transit/bus-stops')
          .then(response => response.json()).then(getMyStopData => {
-           let myStopData = getMyStopData["stops"][getMyStopData.stops.length-2]},
+           let myStopData = getMyStopData["stops"][getMyStopData.stops.length-2]}, // hard coded for my personal stop
            //console.log(myStopData)},
        response => msg.channel.send('Error'))
         }
@@ -237,11 +255,11 @@ function onInterval(Client) {
         fetch('https://api.devhub.virginia.edu/v1/transit/vehicles')
         .then(response => response.json()).then(getBusData => {
           for (const prop in getBusData["vehicles"]) {
-            if (getBusData["vehicles"][prop]["next_stop"] === 4250394){
-              Bot.sendMessage('Your bus is arriving soon.');
+            if (getBusData["vehicles"][prop]["next_stop"] === 4250394){ // runs through all the vehicles in the api and checks if its next stop matches my bus stop
+              Bot.sendMessage('Your bus is arriving soon.'); // notifies that bus is approaching
             }
-            if (getBusData["vehicles"][prop]["current_stop_id"] === 4250394){
-              Bot.sendMessage("Your bus has arrived.");
+            if (getBusData["vehicles"][prop]["current_stop_id"] === 4250394){ // runs through all vehicles in api and checks if its current stop matches my bus stop
+              Bot.sendMessage("Your bus has arrived."); // notifies that bus has arrived
             }
         }
       },

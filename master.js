@@ -21,4 +21,4 @@ MasterBot.on('message', msg => {
 });
 
 // Activate intervals on all handlers
-Object.keys(Handlers).map(({ Interval }) => setInterval(Interval(MasterBot), 5000));
+Object.keys(Handlers).map({ Interval } => setInterval(Interval(MasterBot), 5000));
